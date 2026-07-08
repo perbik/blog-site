@@ -41,7 +41,7 @@ export default async function RootLayout({
 		>
 			<body className="min-h-full">
 				<SideBar tags={tags} />
-				<main className="min-w-0 md:pl-80">{children}</main>
+				<main className="relative z-10 min-w-0 md:pl-80">{children}</main>
 			</body>
 		</html>
 	);
