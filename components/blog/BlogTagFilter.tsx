@@ -99,7 +99,7 @@ export function BlogTagFilter({ tags, activeTags = [] }: BlogTagFilterProps) {
 
 			<SheetContent
 				side="right"
-				className="w-[360px] max-w-[calc(100vw-24px)] gap-0 border-white/10 bg-[#111] px-5 py-5 text-white"
+				className="w-90 max-w-[calc(100vw-24px)] gap-0 border-white/10 bg-[#111] px-5 py-5 text-white"
 			>
 				<SheetTitle className="font-heading text-4xl font-black leading-none text-white">
 					Filter blogs
@@ -121,7 +121,7 @@ export function BlogTagFilter({ tags, activeTags = [] }: BlogTagFilterProps) {
 									"flex min-h-12 cursor-pointer items-center justify-between rounded-[16px] border px-4 text-left font-mono text-sm transition-colors",
 									selected
 										? "border-white bg-white text-black"
-										: "border-white/10 bg-white/[0.04] text-white/70 hover:bg-white/10 hover:text-white",
+										: "border-white/10 bg-white/4 text-white/70 hover:bg-white/10 hover:text-white",
 								)}
 								aria-pressed={selected}
 							>

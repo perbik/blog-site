@@ -95,7 +95,7 @@ export function CommentForm({
 					aria-describedby={
 						authorNameError ? "comment-author-name-error" : undefined
 					}
-					className="w-full rounded-[16px] border-2 border-transparent bg-white px-5 py-5 font-mono text-base text-black outline-none placeholder:text-black/40 focus-visible:ring-4 focus-visible:ring-black/15 aria-[invalid=true]:border-[#EA4D30]"
+					className="w-full rounded-[16px] border-2 border-transparent bg-white px-5 py-5 font-mono text-base text-black outline-none placeholder:text-black/40 focus-visible:ring-4 focus-visible:ring-black/15 aria-invalid:border-[#EA4D30]"
 				/>
 				{authorNameError ? (
 					<p
@@ -124,7 +124,7 @@ export function CommentForm({
 					onChange={(event) => setBodyLength(event.currentTarget.value.length)}
 					aria-invalid={bodyError ? "true" : undefined}
 					aria-describedby={bodyDescription}
-					className="min-h-[220px] w-full resize-none rounded-[16px] border-2 border-transparent bg-[#fcfcfc] px-5 py-5 font-mono text-base text-black outline-none placeholder:text-black/40 focus-visible:ring-4 focus-visible:ring-black/15 aria-[invalid=true]:border-[#EA4D30]"
+					className="min-h-55 w-full resize-none rounded-[16px] border-2 border-transparent bg-[#fcfcfc] px-5 py-5 font-mono text-base text-black outline-none placeholder:text-black/40 focus-visible:ring-4 focus-visible:ring-black/15 aria-invalid:border-[#EA4D30]"
 				/>
 				<div className="mt-2 flex items-start justify-between gap-4 px-2">
 					{bodyError ? (
