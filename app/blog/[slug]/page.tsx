@@ -1,13 +1,19 @@
+import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
-import { BlogPostNavbar } from "@/components/blog/BlogPostNavbar";
 import { CommentCard } from "@/components/cards/CommentCard";
 import { CommentForm } from "@/components/comments/CommentForm";
-import { LoopingHeadline } from "@/components/home/LoopingHeadline";
-import { getBlogCardColorClassForSlug } from "@/lib/blog-card-styles";
+import { SiteFooter } from "@/components/layout/SiteFooter";
+import {
+	getCardColorClassForSlug,
+	getCardColorNameForSlug,
+} from "@/lib/blog-card-styles";
 import { getPosts, getPostWithCommentsBySlug } from "@/lib/db/queries";
+import BlogPostLoading from "./loading";
 
 interface BlogPostPageProps {
 	params: Promise<{
@@ -46,8 +52,7 @@ export async function generateMetadata({
 	};
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
-	const { slug } = await params;
+async function BlogPostContent({ slug }: { slug: string }) {
 	const [post, posts] = await Promise.all([
 		getPostWithCommentsBySlug(slug),
 		getPosts(),
@@ -57,74 +62,83 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 		notFound();
 	}
 
+	const accentClassName = getCardColorClassForSlug(posts, post.slug);
+	const accentName = getCardColorNameForSlug(posts, post.slug);
 	const paragraphs = getPostParagraphs(post.body);
 	const commentCount = post.comments.length;
-	const postColorClassName = getBlogCardColorClassForSlug(posts, post.slug);
-	const heroBackground = post.image
-		? { backgroundImage: `url(${post.image})` }
-		: {
-				backgroundImage:
-					"linear-gradient(145deg, #ffc25f 0%, #f6d4db 27%, #ca54d8 55%, #7110cb 100%)",
-			};
-
 	return (
-		<div className="min-h-screen bg-comment px-5 pb-10 pt-6 text-black sm:px-8 lg:px-12 lg:pb-14">
-			<div className="mx-auto flex w-full max-w-6xl flex-col">
-				<BlogPostNavbar colorClassName={postColorClassName} />
+		<div
+			data-post-accent={accentName}
+			className="flex min-h-screen flex-col bg-[#f5f5f5] text-black"
+		>
+			<div
+				className="relative mt-0 h-[clamp(220px,38vw,400px)] w-full overflow-hidden bg-gradient-to-br from-[#C389BA] via-[#699DF4] to-[#F5B22D]"
+				aria-hidden="true"
+			>
+				{post.image ? (
+					<Image
+						src={post.image}
+						alt=""
+						fill
+						priority
+						sizes="100vw"
+						className="object-cover object-center"
+					/>
+				) : null}
+			</div>
 
+			<div className="mx-auto w-full max-w-4xl flex-1 px-6 pb-20 pt-10">
 				<Link
 					href="/blog"
-					className="mb-8 inline-flex w-fit items-center gap-2 font-heading text-2xl font-black uppercase leading-none tracking-normal transition-opacity hover:opacity-70 sm:text-3xl"
+					className="mb-8 inline-flex items-center gap-2 font-heading text-2xl font-medium leading-none transition-opacity hover:opacity-60"
 				>
-					<span aria-hidden="true">{"<-"}</span>
-					<span>Back</span>
+					<ArrowLeft className="size-7" strokeWidth={2.2} aria-hidden="true" />
+					<span>BACK</span>
 				</Link>
 
 				<article>
-					<div
-						className="h-52 w-full rounded-[2rem] bg-cover bg-center sm:h-72 sm:rounded-[2.4rem] lg:h-80"
-						style={heroBackground}
-						aria-hidden="true"
-					/>
-
-					<header className="-mt-1 sm:-mt-2">
-						<h1 className="max-w-5xl font-heading text-[clamp(4.5rem,12vw,7.5rem)] font-black leading-[0.78] tracking-normal text-black">
-							{post.title}
-						</h1>
-
-						<div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 pl-1">
+					<header>
+						<div className="mb-4 flex flex-wrap gap-2">
 							{post.tags.map((tag) => (
 								<Link
 									key={tag}
 									href={`/blog?tag=${encodeURIComponent(tag)}`}
-									className="rounded-full border border-black bg-comment px-2 py-1 font-mono text-[0.65rem] font-medium leading-none text-black transition-colors hover:bg-black hover:text-white"
+									className="rounded-full border border-black/30 px-3 py-1 font-mono text-xs leading-none transition-colors hover:bg-black hover:text-white"
 								>
 									{tag}
 								</Link>
 							))}
 						</div>
 
+						<h1 className="mb-3 font-heading text-[clamp(48px,8vw,100px)] font-bold leading-none text-black">
+							{post.title}
+						</h1>
+
 						<time
-							className="mt-2 block pl-1 font-mono text-sm font-medium leading-none text-black/75"
+							className="mb-10 block font-mono text-sm text-black/50"
 							dateTime={post.createdAt.toISOString()}
 						>
 							{postDateFormatter.format(post.createdAt)}
 						</time>
 					</header>
 
-					<div className="mx-auto mt-7 max-w-2xl space-y-8 font-mono text-base font-medium leading-[1.85] text-black sm:mt-8 sm:text-lg">
+					<div className="mb-10 border-t border-black/10" />
+
+					<div className="mb-16 space-y-8 font-mono text-lg leading-[1.8] text-black">
 						{paragraphs.map((paragraph) => (
-							<p key={paragraph}>{paragraph}</p>
+							<p key={paragraph} className="text-justify">
+								{paragraph}
+							</p>
 						))}
 					</div>
 				</article>
 
-				<section className="mx-auto mt-11 w-full max-w-4xl border-t border-black/10 pt-10">
-					<h2 className="font-heading text-3xl font-black leading-none sm:text-4xl">
+				<section className="mb-8">
+					<h2 className="mb-6 font-heading text-3xl font-medium leading-none">
 						{commentCount} {commentCount === 1 ? "Comment" : "Comments"}
 					</h2>
 
-					<div className="mx-auto mt-7 flex max-w-3xl flex-col gap-5">
+					<div className="mb-10 flex flex-col gap-4">
 						{post.comments.length > 0 ? (
 							post.comments.map((comment) => (
 								<CommentCard
@@ -135,47 +149,32 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 								/>
 							))
 						) : (
-							<p className="font-mono text-base font-medium text-black/70">
-								No comments yet.
+							<p className="font-mono text-sm text-black/40">
+								No comments yet. Be the first!
 							</p>
 						)}
 					</div>
 				</section>
 
-				<section className="mx-auto mt-11 flex w-full max-w-3xl flex-col items-center">
-					<h2 className="mb-7 text-center font-heading text-3xl font-black leading-none sm:text-4xl">
+				<section>
+					<h2 className="mb-6 text-center font-heading text-3xl font-medium leading-none">
 						Leave a comment
 					</h2>
-					<CommentForm slug={post.slug} colorClassName={postColorClassName} />
+					<CommentForm slug={post.slug} accentClassName={accentClassName} />
 				</section>
-
-				<footer className="mx-auto mt-44 w-full max-w-5xl pb-4">
-					<div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 font-heading text-[clamp(2.5rem,7vw,4.5rem)] font-black leading-none tracking-normal">
-						<span className="bg-comment leading-none">[</span>
-						<div className="min-w-0 overflow-hidden text-center leading-none">
-							<LoopingHeadline />
-						</div>
-						<span className="bg-comment leading-none">]</span>
-					</div>
-
-					<div className="mt-7 flex flex-col items-center text-center">
-						<div className="size-16 bg-black" aria-hidden="true" />
-						<p className="mt-5 font-heading text-5xl font-black leading-none">
-							blog
-						</p>
-						<p className="mt-3 max-w-xs font-mono text-base font-medium leading-snug">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur
-							efficitur.
-						</p>
-						<div className="mt-7 flex gap-8" aria-hidden="true">
-							<span className="size-10 rounded-full bg-black" />
-							<span className="size-10 rounded-full bg-black" />
-							<span className="size-10 rounded-full bg-black" />
-							<span className="size-10 rounded-full bg-black" />
-						</div>
-					</div>
-				</footer>
 			</div>
+
+			<SiteFooter />
 		</div>
+	);
+}
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+	const { slug } = await params;
+
+	return (
+		<Suspense key={slug} fallback={<BlogPostLoading />}>
+			<BlogPostContent slug={slug} />
+		</Suspense>
 	);
 }
