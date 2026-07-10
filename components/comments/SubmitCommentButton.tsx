@@ -9,7 +9,7 @@ export function SubmitCommentButton() {
 		<button
 			type="submit"
 			disabled={pending}
-			className="min-h-14 w-full rounded-full bg-black px-8 py-4 font-mono text-lg font-semibold leading-none text-white transition-opacity hover:opacity-85 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-black/25 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-54"
+			className="cursor-pointer rounded-[16px] bg-black px-8 py-4 font-mono text-base font-medium text-white transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-black/25 disabled:cursor-not-allowed disabled:opacity-50"
 		>
 			{pending ? "Sending..." : "Send Comment"}
 		</button>

@@ -8,7 +8,7 @@ import { SubmitCommentButton } from "./SubmitCommentButton";
 
 interface CommentFormProps {
 	slug: string;
-	colorClassName?: string;
+	accentClassName?: string;
 	className?: string;
 }
 
@@ -18,7 +18,7 @@ const initialState: AddCommentState = {
 
 export function CommentForm({
 	slug,
-	colorClassName = "bg-blog-yellow",
+	accentClassName = "bg-[#F5B22D]",
 	className,
 }: CommentFormProps) {
 	const formRef = useRef<HTMLFormElement>(null);
@@ -41,8 +41,8 @@ export function CommentForm({
 			ref={formRef}
 			action={formAction}
 			className={cn(
-				"w-full max-w-3xl rounded-[1.2rem] p-5 text-black sm:rounded-[1.35rem] sm:p-9",
-				colorClassName,
+				"w-full rounded-[22px] p-6 text-black",
+				accentClassName,
 				className,
 			)}
 			noValidate
@@ -62,19 +62,19 @@ export function CommentForm({
 					aria-describedby={
 						authorNameError ? "comment-author-name-error" : undefined
 					}
-					className="min-h-18 w-full rounded-[0.9rem] border-0 bg-comment px-7 py-5 font-mono text-sm font-bold text-black outline-none placeholder:text-black focus-visible:ring-4 focus-visible:ring-black/20 sm:min-h-22 sm:rounded-[1rem]"
+					className="w-full rounded-[16px] border-2 border-transparent bg-white px-5 py-5 font-mono text-base text-black outline-none placeholder:text-black/40 focus-visible:ring-4 focus-visible:ring-black/15 aria-[invalid=true]:border-[#EA4D30]"
 				/>
 				{authorNameError ? (
 					<p
 						id="comment-author-name-error"
-						className="mt-2 px-4 font-mono text-sm font-semibold text-black"
+						className="mt-1 px-2 font-mono text-xs text-[#EA4D30]"
 					>
 						{authorNameError}
 					</p>
 				) : null}
 			</div>
 
-			<div className="mt-5 sm:mt-6">
+			<div className="mt-3">
 				<label htmlFor="comment-body" className="sr-only">
 					Share your thoughts
 				</label>
@@ -87,12 +87,12 @@ export function CommentForm({
 					defaultValue={state.success ? "" : state.values?.body}
 					aria-invalid={bodyError ? "true" : undefined}
 					aria-describedby={bodyError ? "comment-body-error" : undefined}
-					className="min-h-64 w-full resize-y rounded-[0.9rem] border-0 bg-comment px-7 py-8 font-mono text-sm font-bold text-black outline-none placeholder:text-black focus-visible:ring-4 focus-visible:ring-black/20 sm:min-h-84 sm:rounded-[1rem]"
+					className="min-h-[220px] w-full resize-none rounded-[16px] border-2 border-transparent bg-[#fcfcfc] px-5 py-5 font-mono text-base text-black outline-none placeholder:text-black/40 focus-visible:ring-4 focus-visible:ring-black/15 aria-[invalid=true]:border-[#EA4D30]"
 				/>
 				{bodyError ? (
 					<p
 						id="comment-body-error"
-						className="mt-2 px-4 font-mono text-sm font-semibold text-black"
+						className="mt-1 px-2 font-mono text-xs text-[#EA4D30]"
 					>
 						{bodyError}
 					</p>
@@ -100,12 +100,12 @@ export function CommentForm({
 			</div>
 
 			{state.message ? (
-				<p className="mt-4 px-4 font-mono text-sm font-semibold text-black">
+				<p className="mt-4 px-2 font-mono text-sm font-medium text-black">
 					{state.message}
 				</p>
 			) : null}
 
-			<div className="mt-5 flex justify-end sm:mt-6">
+			<div className="mt-4 flex justify-end">
 				<SubmitCommentButton />
 			</div>
 		</form>
