@@ -250,28 +250,6 @@ html:has([data-post-accent]) .site-scroll-progress::-moz-progress-bar {
 	background: var(--active-post-accent);
 }
 
-.post-scroll-progress {
-	appearance: none;
-	border: 0;
-}
-
-.post-scroll-progress::-webkit-progress-bar {
-	background: transparent;
-}
-
-.post-scroll-progress::-webkit-progress-value,
-.post-scroll-progress::-moz-progress-bar {
-	border-radius: 9999px;
-	background: inherit;
-}
-
-.toaster {
-	--normal-bg: var(--popover);
-	--normal-text: var(--popover-foreground);
-	--normal-border: var(--border);
-	--border-radius: var(--radius);
-}
-
 .site-glass-nav {
 	backdrop-filter: blur(32px) saturate(165%);
 	-webkit-backdrop-filter: blur(32px) saturate(165%);

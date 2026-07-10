@@ -2,12 +2,7 @@ import { desc, eq, sql } from "drizzle-orm";
 import { db } from "./index";
 import { comments, posts } from "./schema";
 
-type CreatePostInput = typeof posts.$inferInsert;
 type CreateCommentInput = typeof comments.$inferInsert;
-
-export function createPost(input: CreatePostInput) {
-	return db.insert(posts).values(input).returning();
-}
 
 export function createComment(input: CreateCommentInput) {
 	return db.insert(comments).values(input).returning();
@@ -54,10 +49,6 @@ export function getPosts(tags?: string | string[]) {
 		.orderBy(desc(posts.createdAt));
 }
 
-export function getRecentPosts(count = 5) {
-	return db.select().from(posts).orderBy(desc(posts.createdAt)).limit(count);
-}
-
 export async function getPostTags(): Promise<string[]> {
 	const rows = await db
 		.select({ tag: sql<string>`unnest(${posts.tags})` })
@@ -68,22 +59,4 @@ export async function getPostTags(): Promise<string[]> {
 	);
 
 	return Array.from(new Set(tags)).sort((a, b) => a.localeCompare(b));
-}
-
-export function getPostsWithComments() {
-	return db.query.posts.findMany({
-		with: { comments: true },
-	});
-}
-
-export function updatePostTitle(postId: string, title: string) {
-	return db
-		.update(posts)
-		.set({ title })
-		.where(eq(posts.id, postId))
-		.returning();
-}
-
-export function deleteComment(commentId: string) {
-	return db.delete(comments).where(eq(comments.id, commentId)).returning();
 }
