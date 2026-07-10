@@ -66,15 +66,15 @@ export function BlogPostNavbar({ colorClassName }: BlogPostNavbarProps) {
 				</Link>
 			</div>
 
-			<div className="mx-auto mt-1 h-1 w-[94%] overflow-hidden rounded-full bg-transparent">
-				<div
-					className={cn(
-						"h-full origin-left rounded-full transition-transform duration-150 ease-out",
-						colorClassName,
-					)}
-					style={{ transform: `scaleX(${progress})` }}
-				/>
-			</div>
+			<progress
+				className={cn(
+					"post-scroll-progress mx-auto mt-1 block h-1 w-[94%] overflow-hidden rounded-full",
+					colorClassName,
+				)}
+				value={progress}
+				max={1}
+				aria-label="Reading progress"
+			/>
 		</nav>
 	);
 }

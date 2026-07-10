@@ -1,79 +1,98 @@
 import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface BlogCardProps {
 	title: string;
 	href: string;
 	image?: string | null;
-	badge?: string;
-	layout?: "default" | "side-image";
+	tags?: string[];
+	authorName?: string | null;
+	createdAt?: Date;
+	colorClassName?: string;
+	heightClassName?: string;
 	className?: string;
-	imageClassName?: string;
-	titleClassName?: string;
-	tabIndex?: number;
+}
+
+function getCardHeightClass(title: string) {
+	if (title.length <= 18) {
+		return "min-h-[360px] sm:min-h-[390px]";
+	}
+
+	if (title.length <= 38) {
+		return "min-h-[410px] sm:min-h-[430px]";
+	}
+
+	return "min-h-[460px] sm:min-h-[480px]";
 }
 
 export function BlogCard({
 	title,
 	href,
 	image,
-	badge,
-	layout = "default",
+	tags = [],
+	colorClassName = "bg-[#F5B22D]",
+	heightClassName = "min-h-[380px]",
 	className,
-	imageClassName,
-	titleClassName,
-	tabIndex,
 }: BlogCardProps) {
-	const isSideImage = layout === "side-image";
+	const visibleTags = tags.slice(0, 2);
+	const hiddenTagCount = Math.max(tags.length - visibleTags.length, 0);
 
 	return (
 		<Link
 			href={href}
-			tabIndex={tabIndex}
 			className={cn(
-				"group flex h-92 w-[78vw] max-w-[20rem] shrink-0 flex-col overflow-hidden rounded-[2rem] bg-yellow-400 p-4 text-black transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-black/30 sm:h-96 sm:w-[20rem] sm:rounded-[2.35rem] sm:p-5",
-				isSideImage &&
-					"grid flex-none grid-cols-[minmax(0,0.58fr)_minmax(0,0.42fr)] grid-rows-1 gap-3 sm:gap-4",
+				"group relative flex w-full flex-col rounded-[40px] p-5 text-black transition-transform hover:-translate-y-1 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/35 sm:p-6",
+				heightClassName,
+				getCardHeightClass(title),
+				colorClassName,
 				className,
 			)}
 		>
-			<div
-				className={cn(
-					"h-[42%] w-full shrink-0 rounded-[1.35rem] bg-zinc-300 bg-cover bg-center brightness-105 saturate-90 contrast-105 sm:rounded-[1.55rem]",
-					isSideImage && "col-start-1 row-start-1 h-full min-h-0 self-stretch",
-					imageClassName,
-				)}
-				style={image ? { backgroundImage: `url(${image})` } : undefined}
-				aria-hidden="true"
-			/>
+			{image ? (
+				<div className="relative mb-5 h-40 w-full shrink-0 overflow-hidden rounded-[24px] bg-black/10 sm:h-44">
+					<Image
+						src={image}
+						alt=""
+						fill
+						sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+						className="object-cover brightness-105 saturate-90 transition-transform duration-500 ease-out group-hover:scale-105"
+					/>
+				</div>
+			) : null}
 
-			<div
-				className={cn(
-					"flex min-h-0 flex-1 flex-col pt-4",
-					isSideImage && "col-start-2 row-start-1 pt-0",
-				)}
-			>
-				{badge ? (
-					<span className="mb-3 w-fit rounded-full bg-black px-3 py-1 font-heading text-xs font-bold uppercase leading-none text-white">
-						{badge}
-					</span>
+			<h2 className="line-clamp-3 py-3 font-heading text-5xl font-semibold leading-[0.9] tracking-[-0.055em] lg:py-2 lg:text-4xl">
+				{title}
+			</h2>
+
+			<div className="mt-auto flex shrink-0 items-end justify-between pt-4">
+				{tags.length > 0 ? (
+					<div className="flex shrink-0 flex-wrap items-end gap-1">
+						{visibleTags.map((tag) => (
+							<Badge
+								key={tag}
+								variant="outline"
+								className="h-auto rounded-full border-black bg-transparent px-4 py-1.5 font-mono text-lg font-medium leading-none tracking-tight text-black"
+							>
+								{tag}
+							</Badge>
+						))}
+						{hiddenTagCount > 0 ? (
+							<Badge
+								variant="outline"
+								className="h-auto rounded-full border-black bg-black px-4 py-1.5 font-mono text-sm font-medium leading-none tracking-tight text-white"
+							>
+								+{hiddenTagCount}
+							</Badge>
+						) : null}
+					</div>
 				) : null}
-
-				<h2
-					className={cn(
-						"line-clamp-4 max-w-full py-1 text-balance font-heading text-[2rem] font-black leading-[1.02] sm:text-4xl",
-						isSideImage && "text-[1.75rem] sm:text-[2rem] leading-[1.02]",
-						titleClassName,
-					)}
-				>
-					{title}
-				</h2>
-
-				<span className="mt-auto flex size-14 items-center justify-center self-end rounded-full border-[3px] border-black transition-transform duration-200 group-hover:rotate-45 sm:size-16">
+				<span className="flex size-14 items-center justify-center rounded-full border-[3px] border-black transition-transform duration-200 group-hover:rotate-45 sm:size-15">
 					<ArrowUpRight
-						className="size-8 stroke-3 sm:size-9"
+						className="size-7 stroke-[2.6] sm:size-8"
 						aria-hidden="true"
 					/>
 					<span className="sr-only">Read {title}</span>
