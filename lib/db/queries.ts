@@ -1,4 +1,4 @@
-import { arrayContains, desc, eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { db } from "./index";
 import { comments, posts } from "./schema";
 
@@ -37,11 +37,20 @@ export async function getPostWithCommentsBySlug(slug: string) {
 	return { ...post, comments: postComments };
 }
 
-export function getPosts(tag?: string) {
+export function getPosts(tags?: string | string[]) {
+	const activeTags = Array.isArray(tags) ? tags : tags ? [tags] : [];
+
 	return db
 		.select()
 		.from(posts)
-		.where(tag ? arrayContains(posts.tags, [tag]) : undefined)
+		.where(
+			activeTags.length > 0
+				? sql`${posts.tags} && ARRAY[${sql.join(
+						activeTags.map((tag) => sql`${tag}`),
+						sql`, `,
+					)}]::text[]`
+				: undefined,
+		)
 		.orderBy(desc(posts.createdAt));
 }
 
