@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRight, LoaderCircle } from "lucide-react";
 import { useFormStatus } from "react-dom";
 
 export function SubmitCommentButton() {
@@ -9,9 +10,19 @@ export function SubmitCommentButton() {
 		<button
 			type="submit"
 			disabled={pending}
-			className="cursor-pointer rounded-[16px] bg-black px-8 py-4 font-mono text-base font-medium text-white transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-black/25 disabled:cursor-not-allowed disabled:opacity-50"
+			className="inline-flex min-w-44 cursor-pointer items-center justify-center gap-3 rounded-full bg-black px-7 py-4 text-base font-semibold text-white transition-opacity hover:opacity-75 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-black/25 disabled:cursor-not-allowed disabled:bg-black/45"
 		>
-			{pending ? "Sending..." : "Send Comment"}
+			{pending ? (
+				<>
+					<LoaderCircle className="size-5 animate-spin" aria-hidden="true" />
+					Posting…
+				</>
+			) : (
+				<>
+					Post comment
+					<ArrowRight className="size-4" aria-hidden="true" />
+				</>
+			)}
 		</button>
 	);
 }
