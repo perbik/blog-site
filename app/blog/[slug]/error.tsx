@@ -7,18 +7,18 @@ interface BlogPostErrorProps {
 	reset: () => void;
 }
 
-export default function BlogPostError({ error, reset }: BlogPostErrorProps) {
+export default function BlogPostError({ reset }: BlogPostErrorProps) {
 	return (
-		<div className="flex min-h-screen items-center px-5 py-20 sm:px-8 md:px-10 lg:px-14">
-			<section className="max-w-2xl rounded-[2rem] bg-blog-purple p-7 text-black sm:p-10">
-				<p className="font-heading text-sm font-black uppercase leading-none text-black/65">
+		<main className="flex min-h-screen items-center justify-center bg-[#f5f5f5] px-5 py-24 text-black">
+			<section className="w-full max-w-xl rounded-[32px] bg-blog-purple p-8 text-center sm:p-12">
+				<p className="text-xs font-semibold uppercase tracking-[0.18em] text-black/55">
 					Post unavailable
 				</p>
-				<h1 className="mt-3 text-balance font-heading text-5xl font-black leading-[0.9] tracking-normal sm:text-6xl">
-					This post could not load.
+				<h1 className="mt-4 text-balance font-heading text-5xl font-semibold leading-[0.9] sm:text-6xl">
+					This story went offline.
 				</h1>
-				<p className="mt-5 max-w-xl text-base leading-7 text-black/75">
-					{error.message || "Something went wrong while loading this post."}
+				<p className="mx-auto mt-5 max-w-md leading-7 text-black/65">
+					We couldn&apos;t load this post right now. Please try it again.
 				</p>
 				<Button
 					type="button"
@@ -28,6 +28,6 @@ export default function BlogPostError({ error, reset }: BlogPostErrorProps) {
 					Try again
 				</Button>
 			</section>
-		</div>
+		</main>
 	);
 }
