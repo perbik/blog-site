@@ -8,6 +8,7 @@ import { SubmitCommentButton } from "./SubmitCommentButton";
 
 interface CommentFormProps {
 	slug: string;
+	colorClassName?: string;
 	className?: string;
 }
 
@@ -15,7 +16,11 @@ const initialState: AddCommentState = {
 	success: false,
 };
 
-export function CommentForm({ slug, className }: CommentFormProps) {
+export function CommentForm({
+	slug,
+	colorClassName = "bg-blog-yellow",
+	className,
+}: CommentFormProps) {
 	const formRef = useRef<HTMLFormElement>(null);
 	const [state, formAction] = useActionState(
 		addComment.bind(null, slug),
@@ -36,7 +41,8 @@ export function CommentForm({ slug, className }: CommentFormProps) {
 			ref={formRef}
 			action={formAction}
 			className={cn(
-				"w-full max-w-3xl rounded-[2rem] bg-[#F5B22D] p-5 text-black sm:rounded-[2.8rem] sm:p-10",
+				"w-full max-w-3xl rounded-[1.2rem] p-5 text-black sm:rounded-[1.35rem] sm:p-9",
+				colorClassName,
 				className,
 			)}
 			noValidate
@@ -56,7 +62,7 @@ export function CommentForm({ slug, className }: CommentFormProps) {
 					aria-describedby={
 						authorNameError ? "comment-author-name-error" : undefined
 					}
-					className="min-h-20 w-full rounded-[1.6rem] border-0 bg-comment px-7 py-5 font-mono text-lg font-semibold text-black outline-none placeholder:text-black focus-visible:ring-4 focus-visible:ring-black/20 sm:min-h-25 sm:rounded-[1.9rem] sm:px-8 sm:text-xl"
+					className="min-h-18 w-full rounded-[0.9rem] border-0 bg-comment px-7 py-5 font-mono text-sm font-bold text-black outline-none placeholder:text-black focus-visible:ring-4 focus-visible:ring-black/20 sm:min-h-22 sm:rounded-[1rem]"
 				/>
 				{authorNameError ? (
 					<p
@@ -81,7 +87,7 @@ export function CommentForm({ slug, className }: CommentFormProps) {
 					defaultValue={state.success ? "" : state.values?.body}
 					aria-invalid={bodyError ? "true" : undefined}
 					aria-describedby={bodyError ? "comment-body-error" : undefined}
-					className="min-h-72 w-full resize-y rounded-[1.6rem] border-0 bg-comment px-7 py-8 font-mono text-lg font-semibold text-black outline-none placeholder:text-black focus-visible:ring-4 focus-visible:ring-black/20 sm:min-h-93 sm:rounded-[1.9rem] sm:px-8 sm:text-xl"
+					className="min-h-64 w-full resize-y rounded-[0.9rem] border-0 bg-comment px-7 py-8 font-mono text-sm font-bold text-black outline-none placeholder:text-black focus-visible:ring-4 focus-visible:ring-black/20 sm:min-h-84 sm:rounded-[1rem]"
 				/>
 				{bodyError ? (
 					<p

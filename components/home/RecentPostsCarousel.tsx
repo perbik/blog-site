@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BlogCard } from "@/components/cards/BlogCard";
 import {
 	cardColorClasses,
-	cardSizeClasses,
 	getCardColor,
 	hashText,
 	imageSizeClasses,
@@ -23,6 +22,11 @@ interface RecentPostsCarouselProps {
 }
 
 const homeCardSizes = ["standard", "wide", "standard"] as const;
+const homeCardSizeClasses: Record<(typeof homeCardSizes)[number], string> = {
+	standard:
+		"h-[24rem] w-[20rem] max-w-[78vw] sm:h-[27rem] sm:w-[23rem] sm:max-w-none",
+	wide: "h-[23rem] w-[24rem] max-w-[88vw] sm:h-[24rem] sm:w-[38rem] sm:max-w-none",
+};
 
 const IDLE_SPEED = 0.28;
 const WHEEL_FORCE = 0.1;
@@ -51,7 +55,7 @@ export function RecentPostsCarousel({ posts }: RecentPostsCarouselProps) {
 			return {
 				...post,
 				colorClassName: cardColorClasses[color],
-				sizeClassName: cardSizeClasses[size],
+				sizeClassName: homeCardSizeClasses[size],
 				imageClassName: imageSizeClasses[size],
 				layout: (size === "wide" ? "side-image" : "default") as
 					| "side-image"
