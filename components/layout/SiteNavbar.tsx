@@ -50,16 +50,17 @@ export function SiteNavbar() {
 				<nav
 					className={cn(
 						"site-glass-nav site-accent-nav flex h-12 items-center justify-center gap-5 rounded-full border px-5 shadow-[0_4px_32px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out",
+						!isAdminPage && "site-frosted-nav",
 						scrolled && "is-scrolled",
 						isAdminPage
 							? "border-white/10 bg-[#333] text-white"
 							: isLightPage
 								? scrolled
-									? "border-black/10 bg-white/90 text-black"
-									: "border-black/10 bg-white/80 text-black"
+									? "border-black/10 text-black"
+									: "border-black/10 text-black"
 								: scrolled
-									? "border-white/15 bg-white/10 text-white"
-									: "border-white/12 bg-white/5 text-white",
+									? "border-white/25 text-white"
+									: "border-white/20 text-white",
 					)}
 				>
 					<Link
