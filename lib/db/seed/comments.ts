@@ -40,6 +40,7 @@ export async function seedCommentsTable() {
 			postId,
 			authorName: comment.authorName,
 			body: comment.body,
+			approved: true,
 		};
 	});
 
