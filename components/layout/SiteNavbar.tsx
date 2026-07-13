@@ -11,6 +11,8 @@ export function SiteNavbar() {
 	const [progress, setProgress] = useState(0);
 	const pathname = usePathname();
 	const isPostPage = pathname.startsWith("/blog/") && pathname !== "/blog";
+	const isAdminPage = pathname.startsWith("/admin");
+	const isLightPage = isPostPage;
 
 	useEffect(() => {
 		const onScroll = () => {
@@ -37,36 +39,44 @@ export function SiteNavbar() {
 	}, []);
 
 	return (
-		<header className="site-header-glass fixed inset-x-0 top-0 z-50 flex h-24 items-start justify-center px-5 pt-5 sm:px-7">
+		<header
+			className={cn(
+				"site-header-glass fixed inset-x-0 top-0 z-50 flex h-24 items-start justify-center px-5 pt-5 sm:px-7",
+				isLightPage && "site-header-light",
+				isAdminPage && "site-header-no-blur",
+			)}
+		>
 			<div className="relative z-10 w-[min(390px,calc(100vw-40px))]">
 				<nav
 					className={cn(
 						"site-glass-nav site-accent-nav flex h-12 items-center justify-center gap-5 rounded-full border px-5 shadow-[0_4px_32px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out",
 						scrolled && "is-scrolled",
-						isPostPage
-							? scrolled
-								? "border-black/10 bg-white/90 text-black"
-								: "border-black/10 bg-white/80 text-black"
-							: scrolled
-								? "border-white/15 bg-white/10 text-white"
-								: "border-white/12 bg-white/5 text-white",
+						isAdminPage
+							? "border-white/10 bg-[#333] text-white"
+							: isLightPage
+								? scrolled
+									? "border-black/10 bg-white/90 text-black"
+									: "border-black/10 bg-white/80 text-black"
+								: scrolled
+									? "border-white/15 bg-white/10 text-white"
+									: "border-white/12 bg-white/5 text-white",
 					)}
 				>
 					<Link
 						href="/blog"
-						className="select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity hover:opacity-60"
+						className="cursor-pointer select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity hover:opacity-60"
 					>
 						BLOGS
 					</Link>
 					<Link
 						href="/"
-						className="select-none font-heading text-lg font-bold lowercase tracking-tighter transition-transform hover:scale-105"
+						className="cursor-pointer select-none font-heading text-lg font-bold lowercase tracking-tighter transition-transform hover:scale-105"
 					>
 						echo
 					</Link>
 					<Link
 						href="/admin"
-						className="select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity hover:opacity-60"
+						className="cursor-pointer select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity hover:opacity-60"
 					>
 						ADMIN
 					</Link>

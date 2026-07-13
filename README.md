@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# echo
 
-## Getting Started
+A full-stack personal blog built with Next.js, Neon Postgres, Drizzle ORM, Server Actions, Zod, Tailwind CSS, and Markdown.
 
-First, run the development server:
+## Local setup
+
+1. Install dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+2. Copy `.env.example` to `.env.local` and set:
+
+   ```env
+   DATABASE_URL=your-neon-connection-string
+   ADMIN_PASSWORD=your-private-admin-password
+   ```
+
+3. Apply committed migrations:
+
+   ```bash
+   pnpm db:migrate
+   ```
+
+4. Seed posts and approved sample comments:
+
+   ```bash
+   pnpm db:seed
+   ```
+
+5. Start the app:
+
+   ```bash
+   pnpm dev
+   ```
+
+Open `http://localhost:3000`. The admin dashboard is at `/admin`.
+
+## Database workflow
+
+After editing `lib/db/schema.ts`, generate and apply a committed SQL migration:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm db:generate
+pnpm db:migrate
+pnpm db:studio
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Do not use `drizzle-kit push` as a replacement for migration files.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Admin and moderation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Admin authentication uses the configured `ADMIN_PASSWORD`. A successful login creates an eight-hour, HTTP-only signed cookie, and every admin mutation validates that cookie on the server. Changing the password invalidates existing sessions. No user or session records are stored in the database.
 
-## Learn More
+New comments are saved with `approved = false`. They appear publicly only after approval from the moderation tab.
 
-To learn more about Next.js, take a look at the following resources:
+## Markdown posts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Post bodies accept Markdown, including headings, lists, links, blockquotes, code, tables, and GitHub-flavored Markdown. Raw HTML is not enabled.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Verification
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm check
+pnpm tsc --noEmit
+pnpm build
+```

@@ -1,5 +1,5 @@
 import { defineRelations, sql } from "drizzle-orm";
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const posts = pgTable("posts", {
 	id: uuid("id").primaryKey().defaultRandom(),
@@ -18,6 +18,7 @@ export const comments = pgTable("comments", {
 		.notNull(),
 	authorName: text("author_name").notNull(),
 	body: text("body").notNull(),
+	approved: boolean("approved").default(false).notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
