@@ -206,6 +206,19 @@ html:has([data-post-accent="yellow"]) {
 	);
 }
 
+.site-header-glass.site-header-light::before {
+	background: linear-gradient(
+		to bottom,
+		rgb(255 255 255 / 72%) 0%,
+		rgb(255 255 255 / 38%) 50%,
+		transparent 100%
+	);
+}
+
+.site-header-glass.site-header-no-blur::before {
+	display: none;
+}
+
 html:has([data-post-accent]) .site-header-glass::before {
 	background: linear-gradient(
 		to bottom,
