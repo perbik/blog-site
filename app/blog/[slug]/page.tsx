@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 import { CommentCard } from "@/components/cards/CommentCard";
 import { CommentForm } from "@/components/comments/CommentForm";
@@ -26,13 +28,6 @@ const postDateFormatter = new Intl.DateTimeFormat("en-US", {
 	day: "numeric",
 	year: "numeric",
 });
-
-function getPostParagraphs(body: string) {
-	return body
-		.split(/\n{2,}/)
-		.map((paragraph) => paragraph.trim())
-		.filter(Boolean);
-}
 
 export async function generateMetadata({
 	params,
@@ -64,7 +59,6 @@ async function BlogPostContent({ slug }: { slug: string }) {
 
 	const accentClassName = getCardColorClassForSlug(posts, post.slug);
 	const accentName = getCardColorNameForSlug(posts, post.slug);
-	const paragraphs = getPostParagraphs(post.body);
 	const commentCount = post.comments.length;
 	return (
 		<div
@@ -124,12 +118,58 @@ async function BlogPostContent({ slug }: { slug: string }) {
 
 					<div className="mb-10 border-t border-black/10" />
 
-					<div className="mb-16 space-y-8 font-mono text-lg leading-[1.8] text-black">
-						{paragraphs.map((paragraph) => (
-							<p key={paragraph} className="text-justify">
-								{paragraph}
-							</p>
-						))}
+					<div className="mb-16 text-lg leading-[1.8] text-black">
+						<ReactMarkdown
+							remarkPlugins={[remarkGfm]}
+							components={{
+								h2: ({ children }) => (
+									<h2 className="mb-4 mt-12 font-heading text-4xl font-semibold leading-tight">
+										{children}
+									</h2>
+								),
+								h3: ({ children }) => (
+									<h3 className="mb-3 mt-9 font-heading text-2xl font-semibold">
+										{children}
+									</h3>
+								),
+								p: ({ children }) => (
+									<p className="mb-7 text-justify">{children}</p>
+								),
+								ul: ({ children }) => (
+									<ul className="mb-7 list-disc space-y-2 pl-7">{children}</ul>
+								),
+								ol: ({ children }) => (
+									<ol className="mb-7 list-decimal space-y-2 pl-7">
+										{children}
+									</ol>
+								),
+								blockquote: ({ children }) => (
+									<blockquote className="my-9 border-l-4 border-black pl-6 font-heading text-2xl leading-snug text-black/70">
+										{children}
+									</blockquote>
+								),
+								a: ({ children, href }) => (
+									<a
+										href={href}
+										className="font-medium underline decoration-black/30 underline-offset-4 transition hover:decoration-black"
+									>
+										{children}
+									</a>
+								),
+								code: ({ children }) => (
+									<code className="rounded-md bg-black/8 px-1.5 py-0.5 font-mono text-[0.9em]">
+										{children}
+									</code>
+								),
+								pre: ({ children }) => (
+									<pre className="mb-7 overflow-x-auto rounded-2xl bg-black p-5 text-sm leading-6 text-white">
+										{children}
+									</pre>
+								),
+							}}
+						>
+							{post.body}
+						</ReactMarkdown>
 					</div>
 				</article>
 
