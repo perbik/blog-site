@@ -21,9 +21,9 @@ export const cardColorClasses: Record<(typeof cardColors)[number], string> = {
 };
 
 export const cardSizeClasses: Record<(typeof cardSizes)[number], string> = {
-	standard: "h-[24rem] w-[78vw] max-w-80 sm:h-[27rem] sm:w-[23rem]",
-	wide: "h-[23rem] w-[86vw] max-w-96 sm:h-[24rem] sm:w-[38rem]",
-	tall: "h-[32rem] w-[78vw] max-w-80 sm:h-[35rem] sm:w-[23rem]",
+	standard: "h-[24rem] w-full max-w-80 sm:h-[27rem] sm:w-full sm:max-w-[23rem]",
+	wide: "h-[23rem] w-full max-w-96 sm:h-[24rem] sm:w-full sm:max-w-[38rem]",
+	tall: "h-[32rem] w-full max-w-80 sm:h-[35rem] sm:w-full sm:max-w-[23rem]",
 };
 
 export const imageSizeClasses: Record<(typeof cardSizes)[number], string> = {
