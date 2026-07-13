@@ -48,7 +48,7 @@ export function SideBar({ tags }: SidebarShellProps) {
 				</SheetContent>
 			</Sheet>
 
-			<aside className="fixed inset-y-0 left-0 hidden w-80 border-r border-zinc-200 bg-background px-6 py-4 text-foreground md:block">
+			<aside className="fixed inset-y-0 left-0 z-40 hidden w-80 border-r border-zinc-200 bg-background px-6 py-4 text-foreground md:block">
 				<Suspense fallback={null}>
 					<SidebarContent tags={tags} />
 				</Suspense>

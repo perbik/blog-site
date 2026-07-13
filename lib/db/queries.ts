@@ -45,6 +45,10 @@ export function getPosts(tag?: string) {
 		.orderBy(desc(posts.createdAt));
 }
 
+export function getRecentPosts(count = 5) {
+	return db.select().from(posts).orderBy(desc(posts.createdAt)).limit(count);
+}
+
 export async function getPostTags(): Promise<string[]> {
 	const rows = await db
 		.select({ tag: sql<string>`unnest(${posts.tags})` })
