@@ -202,10 +202,6 @@ html:has([data-post-accent="yellow"]) {
 	);
 }
 
-.site-header-glass.site-header-no-blur::before {
-	display: none;
-}
-
 html:has([data-post-accent]) .site-header-glass::before {
 	background: linear-gradient(
 		to bottom,
