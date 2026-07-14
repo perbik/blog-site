@@ -247,9 +247,6 @@ html:has([data-post-accent]) .site-scroll-progress::-moz-progress-bar {
 }
 
 .site-glass-nav {
-	box-shadow:
-		inset 0 1px 0 rgba(255, 255, 255, 0.123),
-		0 8px 32px rgb(0 0 0 / 18%);
 	transform: translateZ(0);
 }
 
@@ -257,7 +254,7 @@ html:has([data-post-accent]) .site-scroll-progress::-moz-progress-bar {
 	position: relative;
 	isolation: isolate;
 	overflow: hidden;
-	background: transparent;
+	background: rgba(10, 10, 10, 0.356);
 }
 
 .site-frosted-nav::before {
@@ -266,11 +263,10 @@ html:has([data-post-accent]) .site-scroll-progress::-moz-progress-bar {
 	inset: 0;
 	border-radius: inherit;
 	content: "";
-	background: rgb(255 255 255 / 20%);
 }
 
 .site-frosted-nav.is-scrolled::before {
-	background: rgb(255 255 255 / 28%);
+	background: rgba(10, 10, 10, 0.356);
 }
 
 .site-header-light .site-frosted-nav::before {

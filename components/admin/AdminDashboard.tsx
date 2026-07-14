@@ -28,7 +28,7 @@ export function AdminDashboard({
 	];
 
 	return (
-		<main className="min-h-screen bg-black px-4 pb-20 pt-28 text-black sm:px-6">
+		<main className="min-h-screen bg-[#0a0a0a] px-4 pb-20 pt-28 text-black sm:px-6">
 			<div className="mx-auto max-w-7xl space-y-4">
 				<header className="flex flex-col gap-8 rounded-[28px] bg-[#F5B22D] px-7 py-8 sm:flex-row sm:items-end sm:justify-between sm:px-10 sm:py-10">
 					<div>
