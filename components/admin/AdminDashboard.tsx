@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { logoutAdmin } from "@/app/admin/actions";
+import { AutoApprovalToggle } from "@/components/admin/AutoApprovalToggle";
 import { CommentModeration } from "@/components/admin/CommentModeration";
 import { NewPostForm } from "@/components/admin/NewPostForm";
 import { cn } from "@/lib/utils";
@@ -9,12 +10,14 @@ interface AdminDashboardProps {
 	activeTab: "compose" | "moderation";
 	postCount: number;
 	comments: React.ComponentProps<typeof CommentModeration>["comments"];
+	autoApproveComments: boolean;
 }
 
 export function AdminDashboard({
 	activeTab,
 	postCount,
 	comments,
+	autoApproveComments,
 }: AdminDashboardProps) {
 	const hiddenCount = comments.filter((comment) => !comment.approved).length;
 	const approvedCount = comments.length - hiddenCount;
@@ -104,6 +107,7 @@ export function AdminDashboard({
 					<NewPostForm />
 				) : (
 					<section className="space-y-4">
+						<AutoApprovalToggle enabled={autoApproveComments} />
 						<CommentModeration comments={comments} />
 					</section>
 				)}

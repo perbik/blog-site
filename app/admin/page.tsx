@@ -4,7 +4,11 @@ import { Suspense } from "react";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { getCommentsForModeration, getPosts } from "@/lib/db/queries";
+import {
+	getAutoApproveComments,
+	getCommentsForModeration,
+	getPosts,
+} from "@/lib/db/queries";
 import AdminLoading from "./loading";
 
 export const metadata: Metadata = {
@@ -21,9 +25,10 @@ async function AdminContent({
 }: {
 	activeTab: "compose" | "moderation";
 }) {
-	const [posts, comments] = await Promise.all([
+	const [posts, comments, autoApproveComments] = await Promise.all([
 		getPosts(),
 		getCommentsForModeration(),
+		getAutoApproveComments(),
 	]);
 
 	return (
@@ -31,6 +36,7 @@ async function AdminContent({
 			activeTab={activeTab}
 			postCount={posts.length}
 			comments={comments}
+			autoApproveComments={autoApproveComments}
 		/>
 	);
 }
