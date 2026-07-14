@@ -43,7 +43,6 @@ export function SiteNavbar() {
 			className={cn(
 				"site-header-glass fixed inset-x-0 top-0 z-50 flex h-24 items-start justify-center px-5 pt-5 sm:px-7",
 				isLightPage && "site-header-light",
-				isAdminPage && "site-header-no-blur",
 			)}
 		>
 			<div className="relative z-10 w-[min(390px,calc(100vw-40px))]">
@@ -53,7 +52,7 @@ export function SiteNavbar() {
 						!isAdminPage && "site-frosted-nav",
 						scrolled && "is-scrolled",
 						isAdminPage
-							? "border-white/10 bg-[#333] text-white"
+							? "border-white/10 bg-[#333]/85 text-white backdrop-blur-xl"
 							: isLightPage
 								? scrolled
 									? "border-black/10 text-black"
