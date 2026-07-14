@@ -1,5 +1,10 @@
+"use client";
+
+import { useState } from "react";
+
 import { BlogTagFilter } from "@/components/blog/BlogTagFilter";
 import { BlogCard } from "@/components/cards/BlogCard";
+import { PaginationNav } from "@/components/layout/PaginationNav";
 import { getBlogCardHeightClass } from "@/lib/blog-card-styles";
 
 interface BlogListPost {
@@ -23,6 +28,14 @@ export function BlogBentoGrid({
 	tags,
 	activeTags = [],
 }: BlogBentoGridProps) {
+	const [currentPage, setCurrentPage] = useState(1);
+	const postsPerPage = 15;
+	const totalPages = Math.ceil(posts.length / postsPerPage);
+	const visiblePosts = posts.slice(
+		(currentPage - 1) * postsPerPage,
+		currentPage * postsPerPage,
+	);
+
 	return (
 		<section className="min-h-screen bg-[#0a0a0a]" aria-label="Blog posts">
 			<div className="mx-auto flex w-full max-w-[1280px] flex-col px-5 pb-20 pt-[100px] sm:px-6">
@@ -41,7 +54,7 @@ export function BlogBentoGrid({
 
 				{posts.length > 0 ? (
 					<div className="columns-1 gap-[15px] sm:columns-2 lg:columns-3">
-						{posts.map((post) => (
+						{visiblePosts.map((post) => (
 							<div
 								key={post.slug}
 								className="mb-[15px] break-inside-avoid-column"
@@ -66,6 +79,13 @@ export function BlogBentoGrid({
 							: "No posts found."}
 					</div>
 				)}
+
+				<PaginationNav
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={setCurrentPage}
+					className="mt-10 text-white"
+				/>
 			</div>
 		</section>
 	);

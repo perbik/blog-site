@@ -7,8 +7,8 @@ import { Suspense } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import { CommentCard } from "@/components/cards/CommentCard";
 import { CommentForm } from "@/components/comments/CommentForm";
+import { CommentList } from "@/components/comments/CommentList";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import {
 	getCardColorClassForSlug,
@@ -180,14 +180,7 @@ async function BlogPostContent({ slug }: { slug: string }) {
 
 					<div className="mb-10 flex flex-col gap-4">
 						{post.comments.length > 0 ? (
-							post.comments.map((comment) => (
-								<CommentCard
-									key={comment.id}
-									authorName={comment.authorName}
-									body={comment.body}
-									createdAt={comment.createdAt}
-								/>
-							))
+							<CommentList comments={post.comments} />
 						) : (
 							<p className="font-mono text-sm text-black/40">
 								No comments yet. Be the first!
