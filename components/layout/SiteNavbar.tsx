@@ -64,16 +64,16 @@ export function SiteNavbar() {
 					)}
 				>
 					<Link
+						href="/"
+						className="cursor-pointer select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity hover:opacity-60"
+					>
+						HOME
+					</Link>
+					<Link
 						href="/blog"
 						className="cursor-pointer select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity hover:opacity-60"
 					>
 						BLOGS
-					</Link>
-					<Link
-						href="/"
-						className="cursor-pointer select-none font-heading text-lg font-bold lowercase tracking-tighter transition-transform hover:scale-105"
-					>
-						echo
 					</Link>
 					<Link
 						href="/admin"

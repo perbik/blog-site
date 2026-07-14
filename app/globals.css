@@ -278,11 +278,11 @@ html:has([data-post-accent]) .site-scroll-progress::-moz-progress-bar {
 }
 
 .site-header-light .site-frosted-nav::before {
-	background: rgb(255 255 255 / 76%);
+	background: transparent;
 }
 
 .site-header-light .site-frosted-nav.is-scrolled::before {
-	background: rgb(255 255 255 / 86%);
+	background: transparent;
 }
 
 @layer base {
