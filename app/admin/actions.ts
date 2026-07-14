@@ -11,7 +11,11 @@ import {
 	isCorrectAdminPassword,
 	requireAdmin,
 } from "@/lib/admin-auth";
-import { createPost, setCommentApproval } from "@/lib/db/queries";
+import {
+	createPost,
+	setAutoApproveComments,
+	setCommentApproval,
+} from "@/lib/db/queries";
 
 export interface AdminActionState {
 	success: boolean;
@@ -49,6 +53,10 @@ const moderationSchema = z.object({
 	commentId: z.string().uuid(),
 	approved: z.enum(["true", "false"]),
 	postSlug: z.string().trim().min(1),
+});
+
+const autoApprovalSchema = z.object({
+	autoApprove: z.enum(["true", "false"]),
 });
 
 function createSlug(title: string) {
@@ -164,6 +172,19 @@ export async function toggleCommentApproval(formData: FormData) {
 	);
 	revalidatePath("/admin");
 	revalidatePath(`/blog/${parsed.data.postSlug}`);
+}
+
+export async function toggleAutoApproval(formData: FormData) {
+	await requireAdmin();
+
+	const parsed = autoApprovalSchema.safeParse({
+		autoApprove: formData.get("autoApprove"),
+	});
+
+	if (!parsed.success) throw new Error("Invalid auto-approval setting.");
+
+	await setAutoApproveComments(parsed.data.autoApprove === "true");
+	revalidatePath("/admin");
 }
 
 export async function logoutAdmin() {

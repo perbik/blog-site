@@ -1,6 +1,6 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "./index";
-import { comments, posts } from "./schema";
+import { commentSettings, comments, posts } from "./schema";
 
 type CreateCommentInput = typeof comments.$inferInsert;
 type CreatePostInput = typeof posts.$inferInsert;
@@ -11,6 +11,25 @@ export function createPost(input: CreatePostInput) {
 
 export function createComment(input: CreateCommentInput) {
 	return db.insert(comments).values(input).returning();
+}
+
+export async function getAutoApproveComments() {
+	const [settings] = await db
+		.select({ autoApprove: commentSettings.autoApprove })
+		.from(commentSettings)
+		.where(eq(commentSettings.id, "default"));
+
+	return settings?.autoApprove ?? false;
+}
+
+export function setAutoApproveComments(autoApprove: boolean) {
+	return db
+		.insert(commentSettings)
+		.values({ id: "default", autoApprove })
+		.onConflictDoUpdate({
+			target: commentSettings.id,
+			set: { autoApprove },
+		});
 }
 
 export function getPostBySlug(slug: string) {
