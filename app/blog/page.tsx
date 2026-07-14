@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { BlogListData } from "@/components/blog/BlogListData";
+import BlogLoading from "@/components/blog/BlogListLoading";
 import { SiteFooter } from "@/components/layout/SiteFooter";
-import BlogLoading from "./loading";
 
 export const metadata: Metadata = {
 	title: "Blogs",
