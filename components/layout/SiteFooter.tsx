@@ -1,12 +1,18 @@
-import { ChartNetwork, CodeXml, Globe, Mail } from "lucide-react";
+import { faGithub, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
+import { faEnvelope, faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LoopingHeadline } from "@/components/home/LoopingHeadline";
 import { cn } from "@/lib/utils";
 
 const socialLinks = [
-	{ icon: CodeXml, label: "GitHub", href: "https://github.com" },
-	{ icon: ChartNetwork, label: "LinkedIn", href: "https://linkedin.com" },
-	{ icon: Mail, label: "Email", href: "mailto:hello@example.com" },
-	{ icon: Globe, label: "Portfolio", href: "https://example.com" },
+	{ icon: faGithub, label: "GitHub", href: "https://github.com/perbik" },
+	{
+		icon: faLinkedinIn,
+		label: "LinkedIn",
+		href: "https://www.linkedin.com/in/fervicmarlagman/",
+	},
+	{ icon: faEnvelope, label: "Email", href: "fervicmardlagman@gmail.com" },
+	{ icon: faGlobe, label: "Portfolio", href: "https://fervicmar.vercel.app/" },
 ];
 
 interface SiteFooterProps {
@@ -38,7 +44,7 @@ export function SiteFooter({ dark = false }: SiteFooterProps) {
 			<div className="mb-4 mt-8 flex justify-center">
 				<div
 					className={cn(
-						"flex size-[60px] items-center justify-center rounded-full",
+						"flex size-15 items-center justify-center rounded-full",
 						dark ? "bg-[#fcfcfc] text-black" : "bg-black text-white",
 					)}
 				>
@@ -72,7 +78,7 @@ export function SiteFooter({ dark = false }: SiteFooterProps) {
 			</p>
 
 			<div className="flex items-center justify-center gap-5 pb-14">
-				{socialLinks.map(({ icon: Icon, label, href }) => (
+				{socialLinks.map(({ icon, label, href }) => (
 					<a
 						key={label}
 						href={href}
@@ -80,11 +86,11 @@ export function SiteFooter({ dark = false }: SiteFooterProps) {
 						target="_blank"
 						rel="noopener noreferrer"
 						className={cn(
-							"flex size-[46px] items-center justify-center rounded-full transition-opacity hover:opacity-60 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/25",
+							"flex size-11.5 items-center justify-center rounded-full transition-opacity hover:opacity-60 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/25",
 							dark ? "bg-[#fcfcfc] text-black" : "bg-black text-white",
 						)}
 					>
-						<Icon size={18} strokeWidth={1.8} />
+						<FontAwesomeIcon icon={icon} className="size-4.5" />
 					</a>
 				))}
 			</div>
