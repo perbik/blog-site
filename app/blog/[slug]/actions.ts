@@ -3,7 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { createComment, getPostBySlug } from "@/lib/db/queries";
+import {
+	createComment,
+	getAutoApproveComments,
+	getPostBySlug,
+} from "@/lib/db/queries";
 
 const commentSchema = z.object({
 	authorName: z
@@ -20,6 +24,7 @@ const commentSchema = z.object({
 
 export interface AddCommentState {
 	success: boolean;
+	autoApproved?: boolean;
 	message?: string;
 	errors?: {
 		authorName?: string[];
@@ -61,16 +66,20 @@ export async function addComment(
 		};
 	}
 
+	const autoApproved = await getAutoApproveComments();
+
 	await createComment({
 		postId: post.id,
 		authorName: parsed.data.authorName,
 		body: parsed.data.body,
+		approved: autoApproved,
 	});
 
 	revalidatePath("/blog/[slug]", "page");
 
 	return {
 		success: true,
+		autoApproved,
 		message: "Comment posted.",
 	};
 }

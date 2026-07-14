@@ -59,7 +59,9 @@ export function CommentForm({
 							Comment submitted!
 						</p>
 						<p className="mt-1 text-sm text-black/60">
-							It&apos;ll appear here once approved.
+							{state.autoApproved
+								? "It’s now visible in the comments."
+								: "It’ll appear here once approved."}
 						</p>
 					</div>
 				</div>
