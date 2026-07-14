@@ -50,29 +50,30 @@ export function SiteNavbar() {
 				<nav
 					className={cn(
 						"site-glass-nav site-accent-nav flex h-12 items-center justify-center gap-5 rounded-full border px-5 shadow-[0_4px_32px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out",
+						!isAdminPage && "site-frosted-nav",
 						scrolled && "is-scrolled",
 						isAdminPage
 							? "border-white/10 bg-[#333] text-white"
 							: isLightPage
 								? scrolled
-									? "border-black/10 bg-white/90 text-black"
-									: "border-black/10 bg-white/80 text-black"
+									? "border-black/10 text-black"
+									: "border-black/10 text-black"
 								: scrolled
-									? "border-white/15 bg-white/10 text-white"
-									: "border-white/12 bg-white/5 text-white",
+									? "border-white/25 text-white"
+									: "border-white/20 text-white",
 					)}
 				>
+					<Link
+						href="/"
+						className="cursor-pointer select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity hover:opacity-60"
+					>
+						HOME
+					</Link>
 					<Link
 						href="/blog"
 						className="cursor-pointer select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity hover:opacity-60"
 					>
 						BLOGS
-					</Link>
-					<Link
-						href="/"
-						className="cursor-pointer select-none font-heading text-lg font-bold lowercase tracking-tighter transition-transform hover:scale-105"
-					>
-						echo
 					</Link>
 					<Link
 						href="/admin"
