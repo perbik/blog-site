@@ -16,6 +16,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { PaginationNav } from "@/components/layout/PaginationNav";
 
 interface ModerationComment {
 	id: string;
@@ -47,12 +48,19 @@ export function CommentModeration({
 	comments: ModerationComment[];
 }) {
 	const [filter, setFilter] = useState<CommentFilter>("all");
+	const [currentPage, setCurrentPage] = useState(1);
 	const visibleComments = comments.filter((comment) => {
 		if (filter === "approved") return comment.approved;
 		if (filter === "hidden") return !comment.approved;
 		return true;
 	});
 	const activeFilter = filterOptions.find((option) => option.value === filter);
+	const commentsPerPage = 10;
+	const totalPages = Math.ceil(visibleComments.length / commentsPerPage);
+	const paginatedComments = visibleComments.slice(
+		(currentPage - 1) * commentsPerPage,
+		currentPage * commentsPerPage,
+	);
 
 	return (
 		<div className="space-y-4">
@@ -82,7 +90,10 @@ export function CommentModeration({
 					<DropdownMenuSeparator className="mx-1 bg-white/10" />
 					<DropdownMenuRadioGroup
 						value={filter}
-						onValueChange={(value) => setFilter(value as CommentFilter)}
+						onValueChange={(value) => {
+							setFilter(value as CommentFilter);
+							setCurrentPage(1);
+						}}
 					>
 						{filterOptions.map((option) => {
 							const Icon = option.icon;
@@ -124,7 +135,7 @@ export function CommentModeration({
 				</div>
 			) : (
 				<div className="space-y-3">
-					{visibleComments.map((comment) => (
+					{paginatedComments.map((comment) => (
 						<article
 							key={comment.id}
 							className="rounded-[28px] bg-white p-6 sm:p-8"
@@ -183,6 +194,13 @@ export function CommentModeration({
 					))}
 				</div>
 			)}
+
+			<PaginationNav
+				currentPage={currentPage}
+				totalPages={totalPages}
+				onPageChange={setCurrentPage}
+				className="pt-4 text-white"
+			/>
 		</div>
 	);
 }
