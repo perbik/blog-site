@@ -75,7 +75,7 @@ export function getBlogCardHeightClass(title: string) {
 	const lineCount = getBlogCardTitleLineCount(title);
 
 	if (lineCount === 1) return "min-h-[390px]";
-	if (lineCount === 2) return "min-h-[430px]";
+	if (lineCount === 2) return "min-h-[420px]";
 
-	return "min-h-[470px]";
+	return "min-h-[450px]";
 }

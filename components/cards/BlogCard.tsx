@@ -17,18 +17,6 @@ interface BlogCardProps {
 	className?: string;
 }
 
-function getCardHeightClass(title: string) {
-	if (title.length <= 18) {
-		return "min-h-[360px] sm:min-h-[390px]";
-	}
-
-	if (title.length <= 38) {
-		return "min-h-[410px] sm:min-h-[430px]";
-	}
-
-	return "min-h-[460px] sm:min-h-[480px]";
-}
-
 export function BlogCard({
 	title,
 	href,
@@ -47,7 +35,6 @@ export function BlogCard({
 			className={cn(
 				"group relative flex w-full flex-col rounded-[40px] p-5 text-black transition-transform hover:-translate-y-1 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/35 sm:p-6",
 				heightClassName,
-				getCardHeightClass(title),
 				colorClassName,
 				className,
 			)}
@@ -64,8 +51,12 @@ export function BlogCard({
 				</div>
 			) : null}
 
-			<h2 className="line-clamp-3 py-3 font-heading text-5xl font-semibold leading-[0.9] tracking-[-0.055em] lg:py-2 lg:text-4xl">
-				{title}
+			<h2 className="py-3 font-heading text-5xl font-semibold tracking-[-0.055em] lg:py-2 lg:text-4xl">
+				<span
+					className={cn("leading-[1.05]", title.length > 50 && "line-clamp-3")}
+				>
+					{title}
+				</span>
 			</h2>
 
 			<div className="mt-auto flex shrink-0 items-end justify-between pt-4">
