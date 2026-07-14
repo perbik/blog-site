@@ -1,5 +1,6 @@
 "use client";
 
+import { upload } from "@vercel/blob/client";
 import { ImagePlus, Upload, X } from "lucide-react";
 import Image from "next/image";
 import {
@@ -30,25 +31,37 @@ export function NewPostForm() {
 	const [slug, setSlug] = useState(state.values?.slug ?? "");
 	const [image, setImage] = useState(state.values?.image ?? "");
 	const [imageError, setImageError] = useState("");
+	const [imageUploading, setImageUploading] = useState(false);
 	const fileInput = useRef<HTMLInputElement>(null);
 
-	function readImage(file?: File) {
+	async function uploadImage(file?: File) {
 		if (!file) return;
 		if (!file.type.startsWith("image/"))
 			return setImageError("Choose an image file.");
 		if (file.size > MAX_IMAGE_BYTES)
 			return setImageError("Image must be 2 MB or smaller.");
-		const reader = new FileReader();
-		reader.onload = () => {
-			setImage(String(reader.result));
+
+		setImageUploading(true);
+		setImageError("");
+
+		try {
+			const blob = await upload(`blog/${file.name}`, file, {
+				access: "public",
+				handleUploadUrl: "/api/blob/upload",
+			});
+
+			setImage(blob.url);
 			setImageError("");
-		};
-		reader.readAsDataURL(file);
+		} catch {
+			setImageError("The image could not be uploaded. Please try again.");
+		} finally {
+			setImageUploading(false);
+		}
 	}
 
 	function handleDrop(event: DragEvent<HTMLDivElement>) {
 		event.preventDefault();
-		readImage(event.dataTransfer.files[0]);
+		void uploadImage(event.dataTransfer.files[0]);
 	}
 
 	return (
@@ -124,7 +137,7 @@ export function NewPostForm() {
 						accept="image/*"
 						className="sr-only"
 						onChange={(event: ChangeEvent<HTMLInputElement>) =>
-							readImage(event.target.files?.[0])
+							void uploadImage(event.target.files?.[0])
 						}
 					/>
 					<input type="hidden" name="image" value={image} />
@@ -140,7 +153,6 @@ export function NewPostForm() {
 									src={image}
 									alt="Cover preview"
 									fill
-									unoptimized
 									className="object-cover"
 								/>
 								<button
@@ -161,7 +173,9 @@ export function NewPostForm() {
 								<span className="rounded-full bg-white p-3 text-black">
 									<ImagePlus className="size-5" />
 								</span>
-								<strong className="text-black">Drop an image here</strong>
+								<strong className="text-black">
+									{imageUploading ? "Uploading image…" : "Drop an image here"}
+								</strong>
 								<span>or click to browse · max 2 MB</span>
 								<Upload className="mt-1 size-4" />
 							</button>
@@ -206,6 +220,7 @@ export function NewPostForm() {
 			<div className="flex justify-center">
 				<AdminSubmitButton
 					idleLabel="Publish post"
+					disabled={imageUploading}
 					pendingLabel="Publishing…"
 				/>
 			</div>
