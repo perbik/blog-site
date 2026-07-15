@@ -13,6 +13,11 @@ export function SiteNavbar() {
 	const isPostPage = pathname.startsWith("/blog/") && pathname !== "/blog";
 	const isAdminPage = pathname.startsWith("/admin");
 	const isLightPage = isPostPage;
+	const navLinkClassName = (isActive: boolean) =>
+		cn(
+			"relative cursor-pointer select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-full after:origin-left after:bg-current after:transition-transform hover:opacity-60",
+			isActive ? "after:scale-x-100" : "after:scale-x-0",
+		);
 
 	useEffect(() => {
 		const onScroll = () => {
@@ -48,11 +53,10 @@ export function SiteNavbar() {
 			<div className="relative z-10 w-[min(390px,calc(100vw-40px))]">
 				<nav
 					className={cn(
-						"site-glass-nav site-accent-nav flex h-12 items-center justify-center gap-5 rounded-full border px-5 shadow-[0_4px_32px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out",
-						!isAdminPage && "site-frosted-nav",
+						"site-glass-nav site-accent-nav site-frosted-nav flex h-12 items-center justify-center gap-5 rounded-full px-5 transition-all duration-300 ease-out",
 						scrolled && "is-scrolled",
 						isAdminPage
-							? "border-white/10 bg-[#333]/85 text-white backdrop-blur-xl"
+							? "bg-[rgba(10, 10, 10, 0.356)] text-white backdrop-blur-xl"
 							: isLightPage
 								? scrolled
 									? "border-black/10 text-black"
@@ -64,19 +68,22 @@ export function SiteNavbar() {
 				>
 					<Link
 						href="/"
-						className="cursor-pointer select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity hover:opacity-60"
+						className={navLinkClassName(pathname === "/")}
+						aria-current={pathname === "/" ? "page" : undefined}
 					>
 						HOME
 					</Link>
 					<Link
 						href="/blog"
-						className="cursor-pointer select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity hover:opacity-60"
+						className={navLinkClassName(pathname.startsWith("/blog"))}
+						aria-current={pathname.startsWith("/blog") ? "page" : undefined}
 					>
 						BLOGS
 					</Link>
 					<Link
 						href="/admin"
-						className="cursor-pointer select-none font-mono text-xs font-semibold tracking-[0.12em] transition-opacity hover:opacity-60"
+						className={navLinkClassName(isAdminPage)}
+						aria-current={isAdminPage ? "page" : undefined}
 					>
 						ADMIN
 					</Link>
