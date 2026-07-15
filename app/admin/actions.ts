@@ -13,8 +13,13 @@ import {
 } from "@/lib/admin-auth";
 import {
 	createPost,
+	restorePost,
+	restorePosts,
 	setAutoApproveComments,
 	setCommentApproval,
+	softDeletePost,
+	softDeletePosts,
+	updatePost,
 } from "@/lib/db/queries";
 
 export interface AdminActionState {
@@ -42,6 +47,8 @@ const postSchema = z.object({
 	tags: z.string().trim().max(500),
 	body: z.string().trim().min(10, "Body must be at least 10 characters."),
 });
+
+const postIdSchema = z.string().uuid();
 
 const moderationSchema = z.object({
 	commentId: z.string().uuid(),
@@ -146,7 +153,128 @@ export async function createPostAction(
 
 	revalidatePath("/");
 	revalidatePath("/blog");
-	redirect(`/blog/${slug}`);
+	redirect(`/blog/${slug}?postAction=created`);
+}
+
+export async function updatePostAction(
+	_prevState: AdminActionState,
+	formData: FormData,
+): Promise<AdminActionState> {
+	await requireAdmin();
+
+	const values = {
+		title: String(formData.get("title") ?? ""),
+		slug: String(formData.get("slug") ?? ""),
+		image: String(formData.get("image") ?? ""),
+		tags: String(formData.get("tags") ?? ""),
+		body: String(formData.get("body") ?? ""),
+	};
+	const postId = postIdSchema.safeParse(formData.get("postId"));
+	const parsed = postSchema.safeParse(values);
+
+	if (!postId.success) return { success: false, message: "Invalid post." };
+	if (!parsed.success) {
+		return {
+			success: false,
+			errors: parsed.error.flatten().fieldErrors,
+			values,
+		};
+	}
+
+	const slug = parsed.data.slug || createSlug(parsed.data.title);
+	if (!slug) {
+		return {
+			success: false,
+			errors: { slug: ["A valid slug could not be generated."] },
+			values,
+		};
+	}
+
+	try {
+		const updated = await updatePost(postId.data, {
+			title: parsed.data.title,
+			slug,
+			image: parsed.data.image || null,
+			tags: parsed.data.tags
+				.split(",")
+				.map((tag) => tag.trim())
+				.filter(Boolean),
+			body: parsed.data.body,
+		});
+		if (updated.length === 0) {
+			return { success: false, message: "This post no longer exists." };
+		}
+	} catch {
+		return {
+			success: false,
+			message: "The post could not be updated. Check that the slug is unique.",
+			values,
+		};
+	}
+
+	revalidatePath("/");
+	revalidatePath("/blog");
+	revalidatePath("/admin");
+	revalidatePath(`/blog/${slug}`);
+	redirect("/admin?tab=posts&postAction=updated");
+}
+
+export async function deletePostAction(formData: FormData) {
+	await requireAdmin();
+
+	const postId = postIdSchema.safeParse(formData.get("postId"));
+	if (!postId.success) throw new Error("Invalid post.");
+
+	await softDeletePost(postId.data);
+	revalidatePath("/");
+	revalidatePath("/blog");
+	revalidatePath("/admin");
+	redirect("/admin?tab=posts&postAction=deleted");
+}
+
+export async function bulkDeletePostsAction(formData: FormData) {
+	await requireAdmin();
+
+	const postIds = z
+		.array(z.string().uuid())
+		.min(1)
+		.safeParse(formData.getAll("postIds"));
+	if (!postIds.success) throw new Error("Select at least one valid post.");
+
+	await softDeletePosts(postIds.data);
+	revalidatePath("/");
+	revalidatePath("/blog");
+	revalidatePath("/admin");
+	redirect("/admin?tab=posts&postAction=bulkDeleted");
+}
+
+export async function restorePostAction(formData: FormData) {
+	await requireAdmin();
+
+	const postId = postIdSchema.safeParse(formData.get("postId"));
+	if (!postId.success) throw new Error("Invalid post.");
+
+	await restorePost(postId.data);
+	revalidatePath("/");
+	revalidatePath("/blog");
+	revalidatePath("/admin");
+	redirect("/admin?tab=posts&postAction=restored");
+}
+
+export async function bulkRestorePostsAction(formData: FormData) {
+	await requireAdmin();
+
+	const postIds = z
+		.array(z.string().uuid())
+		.min(1)
+		.safeParse(formData.getAll("postIds"));
+	if (!postIds.success) throw new Error("Select at least one valid post.");
+
+	await restorePosts(postIds.data);
+	revalidatePath("/");
+	revalidatePath("/blog");
+	revalidatePath("/admin");
+	redirect("/admin?tab=posts&postAction=bulkRestored");
 }
 
 export async function toggleCommentApproval(formData: FormData) {
