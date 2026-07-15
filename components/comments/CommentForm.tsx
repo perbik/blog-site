@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle, Check } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 
 import { type AddCommentState, addComment } from "@/app/blog/[slug]/actions";
 import { cn } from "@/lib/utils";
@@ -26,10 +26,23 @@ export function CommentForm({
 		addComment.bind(null, slug),
 		initialState,
 	);
-	const [bodyLength, setBodyLength] = useState(state.values?.body?.length ?? 0);
+	const [authorName, setAuthorName] = useState("");
+	const [body, setBody] = useState("");
+	const [feedbackDismissed, setFeedbackDismissed] = useState(false);
 
-	const authorNameError = state.errors?.authorName?.[0];
-	const bodyError = state.errors?.body?.[0];
+	useEffect(() => {
+		setFeedbackDismissed(false);
+
+		if (state.success) {
+			setAuthorName("");
+			setBody("");
+		}
+	}, [state]);
+
+	const authorNameError = feedbackDismissed
+		? undefined
+		: state.errors?.authorName?.[0];
+	const bodyError = feedbackDismissed ? undefined : state.errors?.body?.[0];
 	const bodyDescription = [
 		bodyError ? "comment-body-error" : undefined,
 		"comment-body-count",
@@ -37,37 +50,7 @@ export function CommentForm({
 		.filter(Boolean)
 		.join(" ");
 
-	if (state.success) {
-		return (
-			<div
-				className={cn(
-					"w-full rounded-[22px] p-6 text-black",
-					accentClassName,
-					className,
-				)}
-			>
-				<div
-					className="flex items-center gap-4 rounded-[18px] border border-black/15 bg-white/35 p-5"
-					role="status"
-					aria-live="polite"
-				>
-					<span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-black/70 text-white">
-						<Check className="size-5" strokeWidth={2.2} aria-hidden="true" />
-					</span>
-					<div>
-						<p className="font-heading text-xl font-semibold leading-tight">
-							Comment submitted!
-						</p>
-						<p className="mt-1 text-sm text-black/60">
-							{state.autoApproved
-								? "It’s now visible in the comments."
-								: "It’ll appear here once approved."}
-						</p>
-					</div>
-				</div>
-			</div>
-		);
-	}
+	const dismissFeedback = () => setFeedbackDismissed(true);
 
 	return (
 		<form
@@ -92,7 +75,11 @@ export function CommentForm({
 					type="text"
 					maxLength={80}
 					placeholder="Your name"
-					defaultValue={state.values?.authorName}
+					value={authorName}
+					onChange={(event) => {
+						setAuthorName(event.currentTarget.value);
+						dismissFeedback();
+					}}
 					aria-invalid={authorNameError ? "true" : undefined}
 					aria-describedby={
 						authorNameError ? "comment-author-name-error" : undefined
@@ -122,8 +109,11 @@ export function CommentForm({
 					minLength={10}
 					maxLength={2000}
 					placeholder="Share your thoughts..."
-					defaultValue={state.values?.body}
-					onChange={(event) => setBodyLength(event.currentTarget.value.length)}
+					value={body}
+					onChange={(event) => {
+						setBody(event.currentTarget.value);
+						dismissFeedback();
+					}}
 					aria-invalid={bodyError ? "true" : undefined}
 					aria-describedby={bodyDescription}
 					className="min-h-55 w-full resize-none rounded-[16px] border-2 border-transparent bg-[#fcfcfc] px-5 py-5 font-mono text-base text-black outline-none placeholder:text-black/40 focus-visible:ring-4 focus-visible:ring-black/15 aria-invalid:border-[#EA4D30]"
@@ -143,22 +133,44 @@ export function CommentForm({
 						id="comment-body-count"
 						className={cn(
 							"shrink-0 font-mono text-xs text-black/55",
-							bodyLength >= 1900 && "font-semibold text-[#9f2013]",
+							body.length >= 1900 && "font-semibold text-[#9f2013]",
 						)}
 						aria-live="polite"
 					>
-						{bodyLength}/2000
+						{body.length}/2000
 					</output>
 				</div>
 			</div>
 
-			{state.message ? (
+			{state.message && !state.success && !feedbackDismissed ? (
 				<div
 					className="mt-4 flex items-center gap-3 rounded-[16px] border border-[#9f2013]/25 bg-white/35 px-4 py-3 text-[#75170d]"
 					role="alert"
 				>
 					<AlertCircle className="size-5 shrink-0" aria-hidden="true" />
 					<p className="text-sm font-medium">{state.message}</p>
+				</div>
+			) : null}
+
+			{state.success && !feedbackDismissed ? (
+				<div
+					className="mt-4 flex items-center gap-4 rounded-[18px] border border-black/15 bg-white/35 p-5"
+					role="status"
+					aria-live="polite"
+				>
+					<span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-black/70 text-white">
+						<Check className="size-5" strokeWidth={2.2} aria-hidden="true" />
+					</span>
+					<div>
+						<p className="font-heading text-xl font-semibold leading-tight">
+							Comment submitted!
+						</p>
+						<p className="mt-1 text-sm text-black/60">
+							{state.autoApproved
+								? "It’s now visible in the comments."
+								: "It’ll appear here once approved."}
+						</p>
+					</div>
 				</div>
 			) : null}
 
