@@ -1,8 +1,8 @@
 {
 	"version": "8",
 	"dialect": "postgres",
-	"id": "ef945334-e75d-4047-997c-1ffcdac7dcbb",
-	"prevIds": ["b8c43d9e-5ae8-4e2d-9f89-3d28c66c79a1"],
+	"id": "b8c43d9e-5ae8-4e2d-9f89-3d28c66c79a1",
+	"prevIds": ["9de10da4-3271-4cac-bcc4-271ceebd945f"],
 	"ddl": [
 		{
 			"isRlsEnabled": false,
@@ -64,19 +64,6 @@
 			"generated": null,
 			"identity": null,
 			"name": "body",
-			"entityType": "columns",
-			"schema": "public",
-			"table": "comments"
-		},
-		{
-			"type": "boolean",
-			"typeSchema": null,
-			"notNull": true,
-			"dimensions": 0,
-			"default": "false",
-			"generated": null,
-			"identity": null,
-			"name": "approved",
 			"entityType": "columns",
 			"schema": "public",
 			"table": "comments"
