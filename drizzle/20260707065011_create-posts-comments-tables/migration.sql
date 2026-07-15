@@ -11,7 +11,6 @@ CREATE TABLE "posts" (
 	"title" text NOT NULL,
 	"slug" text NOT NULL UNIQUE,
 	"image" text,
-	"tags" text[] DEFAULT ARRAY[]::text[] NOT NULL,
 	"body" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );

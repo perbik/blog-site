@@ -9,6 +9,7 @@ export const posts = pgTable("posts", {
 	tags: text("tags").array().notNull().default(sql`ARRAY[]::text[]`),
 	body: text("body").notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
+	deletedAt: timestamp("deleted_at"),
 });
 
 export const comments = pgTable("comments", {

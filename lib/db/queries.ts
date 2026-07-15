@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import { db } from "./index";
 import { commentSettings, comments, posts } from "./schema";
 
@@ -36,8 +36,8 @@ export function getPostBySlug(slug: string) {
 	return db
 		.select()
 		.from(posts)
-		.where(eq(posts.slug, slug))
-		.orderBy(desc(posts.createdAt));
+		.where(and(eq(posts.slug, slug), isNull(posts.deletedAt)))
+		.orderBy(desc(posts.createdAt), desc(posts.id));
 }
 
 export async function getPostWithCommentsBySlug(slug: string) {
@@ -69,7 +69,69 @@ export function getCommentsForModeration() {
 		})
 		.from(comments)
 		.innerJoin(posts, eq(comments.postId, posts.id))
+		.where(isNull(posts.deletedAt))
 		.orderBy(desc(comments.createdAt));
+}
+
+export async function getPostById(postId: string) {
+	const [post] = await db
+		.select()
+		.from(posts)
+		.where(and(eq(posts.id, postId), isNull(posts.deletedAt)))
+		.limit(1);
+
+	return post;
+}
+
+export function updatePost(
+	postId: string,
+	input: Pick<CreatePostInput, "title" | "slug" | "image" | "tags" | "body">,
+) {
+	return db
+		.update(posts)
+		.set(input)
+		.where(and(eq(posts.id, postId), isNull(posts.deletedAt)))
+		.returning({ id: posts.id });
+}
+
+export function softDeletePost(postId: string) {
+	return db
+		.update(posts)
+		.set({ deletedAt: new Date() })
+		.where(and(eq(posts.id, postId), isNull(posts.deletedAt)))
+		.returning({ id: posts.id });
+}
+
+export function softDeletePosts(postIds: string[]) {
+	return db
+		.update(posts)
+		.set({ deletedAt: new Date() })
+		.where(and(inArray(posts.id, postIds), isNull(posts.deletedAt)))
+		.returning({ id: posts.id });
+}
+
+export function getDeletedPosts() {
+	return db
+		.select()
+		.from(posts)
+		.where(isNotNull(posts.deletedAt))
+		.orderBy(desc(posts.deletedAt), desc(posts.id));
+}
+
+export function restorePost(postId: string) {
+	return db
+		.update(posts)
+		.set({ deletedAt: null })
+		.where(and(eq(posts.id, postId), isNotNull(posts.deletedAt)))
+		.returning({ id: posts.id });
+}
+
+export function restorePosts(postIds: string[]) {
+	return db
+		.update(posts)
+		.set({ deletedAt: null })
+		.where(and(inArray(posts.id, postIds), isNotNull(posts.deletedAt)))
+		.returning({ id: posts.id });
 }
 
 export function setCommentApproval(commentId: string, approved: boolean) {
@@ -88,19 +150,23 @@ export function getPosts(tags?: string | string[]) {
 		.from(posts)
 		.where(
 			activeTags.length > 0
-				? sql`${posts.tags} && ARRAY[${sql.join(
-						activeTags.map((tag) => sql`${tag}`),
-						sql`, `,
-					)}]::text[]`
-				: undefined,
+				? and(
+						isNull(posts.deletedAt),
+						sql`${posts.tags} && ARRAY[${sql.join(
+							activeTags.map((tag) => sql`${tag}`),
+							sql`, `,
+						)}]::text[]`,
+					)
+				: isNull(posts.deletedAt),
 		)
-		.orderBy(desc(posts.createdAt));
+		.orderBy(desc(posts.createdAt), desc(posts.id));
 }
 
 export async function getPostTags(): Promise<string[]> {
 	const rows = await db
 		.select({ tag: sql<string>`unnest(${posts.tags})` })
-		.from(posts);
+		.from(posts)
+		.where(isNull(posts.deletedAt));
 
 	const tags = rows.flatMap((row) =>
 		typeof row.tag === "string" && row.tag.length > 0 ? [row.tag] : [],
