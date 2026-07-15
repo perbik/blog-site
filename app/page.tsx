@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { BlogHeroCarousel } from "@/components/blog/BlogHeroCarousel";
+import { HomeEmptyState } from "@/components/home/HomeEmptyState";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPosts } from "@/lib/db/queries";
@@ -15,7 +16,11 @@ export const metadata: Metadata = {
 async function HomeHero() {
 	const posts = await getPosts();
 
-	return <BlogHeroCarousel posts={posts} />;
+	return posts.length > 0 ? (
+		<BlogHeroCarousel posts={posts} />
+	) : (
+		<HomeEmptyState />
+	);
 }
 
 function HomeHeroSkeleton() {
