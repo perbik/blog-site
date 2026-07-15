@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 interface BlogHeroPost {
 	title: string;
@@ -26,6 +26,8 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [cursor, setCursor] = useState({ x: 0, y: 0, visible: false });
 	const [controlsHovered, setControlsHovered] = useState(false);
+	const touchStartX = useRef<number | null>(null);
+	const didSwipe = useRef(false);
 
 	if (slides.length === 0) return null;
 
@@ -44,6 +46,22 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 	return (
 		<section
 			className="relative h-svh min-h-152 overflow-hidden bg-black text-white"
+			onTouchStart={(event) => {
+				touchStartX.current = event.touches[0]?.clientX ?? null;
+				didSwipe.current = false;
+			}}
+			onTouchEnd={(event) => {
+				if (touchStartX.current === null) return;
+
+				const distance = event.changedTouches[0].clientX - touchStartX.current;
+				touchStartX.current = null;
+
+				if (Math.abs(distance) < 50) return;
+
+				didSwipe.current = true;
+				if (distance > 0) goToPrevious();
+				else goToNext();
+			}}
 			onPointerMove={(event) => {
 				if (event.pointerType !== "mouse") {
 					return;
@@ -71,10 +89,10 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 			<AnimatePresence mode="wait">
 				<motion.div
 					key={activePost.slug}
-					initial={{ opacity: 0, scale: 1.04 }}
-					animate={{ opacity: 1, scale: 1 }}
-					exit={{ opacity: 0, scale: 1.02 }}
-					transition={{ duration: 0.7, ease: "easeOut" }}
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.45, ease: "easeOut" }}
 					className="absolute inset-0"
 				>
 					<Image
@@ -93,9 +111,15 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 				href={`/blog/${activePost.slug}`}
 				className="absolute inset-0 z-10"
 				aria-label={`Read ${activePost.title}`}
+				onClick={(event) => {
+					if (didSwipe.current) {
+						event.preventDefault();
+						didSwipe.current = false;
+					}
+				}}
 			/>
 
-			<div className="absolute left-5 top-1/2 z-30 hidden -translate-y-1/2 sm:block">
+			<div className="absolute left-3 top-1/2 z-30 -translate-y-1/2 sm:left-5">
 				<button
 					type="button"
 					onClick={goToPrevious}
@@ -104,14 +128,15 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 						setCursor((current) => ({ ...current, visible: false }));
 					}}
 					onPointerLeave={() => setControlsHovered(false)}
-					className="flex cursor-pointer items-center gap-2 rounded-full bg-black/25 px-4 py-3 font-mono text-sm font-bold uppercase backdrop-blur transition hover:bg-black/40"
+					aria-label="Previous slide"
+					className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-black/35 font-mono text-sm font-bold uppercase backdrop-blur transition hover:bg-black/50 sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-3"
 				>
 					<ChevronLeft className="size-4" />
-					Prev
+					<span className="hidden sm:inline">Prev</span>
 				</button>
 			</div>
 
-			<div className="absolute right-5 top-1/2 z-30 hidden -translate-y-1/2 sm:block">
+			<div className="absolute right-3 top-1/2 z-30 -translate-y-1/2 sm:right-5">
 				<button
 					type="button"
 					onClick={goToNext}
@@ -120,9 +145,10 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 						setCursor((current) => ({ ...current, visible: false }));
 					}}
 					onPointerLeave={() => setControlsHovered(false)}
-					className="flex cursor-pointer items-center gap-2 rounded-full bg-black/25 px-4 py-3 font-mono text-sm font-bold uppercase backdrop-blur transition hover:bg-black/40"
+					aria-label="Next slide"
+					className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-black/35 font-mono text-sm font-bold uppercase backdrop-blur transition hover:bg-black/50 sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-3"
 				>
-					Next
+					<span className="hidden sm:inline">Next</span>
 					<ChevronRight className="size-4" />
 				</button>
 			</div>
