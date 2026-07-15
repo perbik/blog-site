@@ -11,7 +11,11 @@ import {
 	useState,
 } from "react";
 
-import { type AdminActionState, createPostAction } from "@/app/admin/actions";
+import {
+	type AdminActionState,
+	createPostAction,
+	updatePostAction,
+} from "@/app/admin/actions";
 import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 
 const initialState: AdminActionState = { success: false };
@@ -25,8 +29,32 @@ function slugify(value: string) {
 		.replace(/^-+|-+$/g, "");
 }
 
-export function NewPostForm() {
-	const [state, formAction] = useActionState(createPostAction, initialState);
+interface PostFormProps {
+	post?: {
+		id: string;
+		title: string;
+		slug: string;
+		image: string | null;
+		tags: string[];
+		body: string;
+	};
+}
+
+export function NewPostForm({ post }: PostFormProps = {}) {
+	const action = post ? updatePostAction : createPostAction;
+	const startingState: AdminActionState = post
+		? {
+				success: false,
+				values: {
+					title: post.title,
+					slug: post.slug,
+					image: post.image ?? "",
+					tags: post.tags.join(", "),
+					body: post.body,
+				},
+			}
+		: initialState;
+	const [state, formAction] = useActionState(action, startingState);
 	const [title, setTitle] = useState(state.values?.title ?? "");
 	const [slug, setSlug] = useState(state.values?.slug ?? "");
 	const [image, setImage] = useState(state.values?.image ?? "");
@@ -70,6 +98,8 @@ export function NewPostForm() {
 			className="rounded-[30px] bg-white p-6 sm:p-10"
 			noValidate
 		>
+			{post ? <input type="hidden" name="postId" value={post.id} /> : null}
+			<input type="hidden" name="slug" value={slug} />
 			<div>
 				<div className="mb-2 flex justify-between">
 					<label htmlFor="post-title" className="text-sm font-medium">
@@ -219,7 +249,7 @@ export function NewPostForm() {
 			) : null}
 			<div className="flex justify-center">
 				<AdminSubmitButton
-					idleLabel="Publish post"
+					idleLabel={post ? "Save changes" : "Publish post"}
 					disabled={imageUploading}
 					pendingLabel="Publishing…"
 				/>
