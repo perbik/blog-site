@@ -1,9 +1,15 @@
 {
 	"version": "8",
 	"dialect": "postgres",
-	"id": "ef945334-e75d-4047-997c-1ffcdac7dcbb",
-	"prevIds": ["b8c43d9e-5ae8-4e2d-9f89-3d28c66c79a1"],
+	"id": "7c41acd0-12e7-488c-b2e2-da0e1a2a44ac",
+	"prevIds": ["78d51864-9ac4-4d5a-b77e-12a18543f2dc"],
 	"ddl": [
+		{
+			"isRlsEnabled": false,
+			"name": "comment_settings",
+			"entityType": "tables",
+			"schema": "public"
+		},
 		{
 			"isRlsEnabled": false,
 			"name": "comments",
@@ -15,6 +21,32 @@
 			"name": "posts",
 			"entityType": "tables",
 			"schema": "public"
+		},
+		{
+			"type": "text",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "'default'",
+			"generated": null,
+			"identity": null,
+			"name": "id",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "comment_settings"
+		},
+		{
+			"type": "boolean",
+			"typeSchema": null,
+			"notNull": true,
+			"dimensions": 0,
+			"default": "false",
+			"generated": null,
+			"identity": null,
+			"name": "auto_approve",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "comment_settings"
 		},
 		{
 			"type": "uuid",
@@ -186,6 +218,19 @@
 			"table": "posts"
 		},
 		{
+			"type": "timestamp",
+			"typeSchema": null,
+			"notNull": false,
+			"dimensions": 0,
+			"default": null,
+			"generated": null,
+			"identity": null,
+			"name": "deleted_at",
+			"entityType": "columns",
+			"schema": "public",
+			"table": "posts"
+		},
+		{
 			"nameExplicit": false,
 			"columns": ["post_id"],
 			"schemaTo": "public",
@@ -197,6 +242,14 @@
 			"entityType": "fks",
 			"schema": "public",
 			"table": "comments"
+		},
+		{
+			"columns": ["id"],
+			"nameExplicit": false,
+			"name": "comment_settings_pkey",
+			"schema": "public",
+			"table": "comment_settings",
+			"entityType": "pks"
 		},
 		{
 			"columns": ["id"],

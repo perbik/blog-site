@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { DM_Sans, Outfit } from "next/font/google";
-
+import { Suspense } from "react";
+import { PostActionToast } from "@/components/layout/PostActionToast";
 import { SiteNavbar } from "@/components/layout/SiteNavbar";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
 import "./globals.css";
@@ -47,6 +49,10 @@ export default function RootLayout({
 				<SiteNavbar />
 
 				<main className="relative z-10 min-w-0">{children}</main>
+				<Suspense>
+					<PostActionToast />
+				</Suspense>
+				<Toaster position="top-right" duration={3000} />
 			</body>
 		</html>
 	);

@@ -1,0 +1,1 @@
+ALTER TABLE "posts" ADD COLUMN IF NOT EXISTS "tags" text[] DEFAULT ARRAY[]::text[] NOT NULL;
