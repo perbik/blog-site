@@ -38,13 +38,7 @@ const postSchema = z.object({
 			/^[a-z0-9]+(?:-[a-z0-9]+)*$|^$/,
 			"Use lowercase letters, numbers, and hyphens only.",
 		),
-	image: z.union([
-		z.literal(""),
-		z
-			.string()
-			.startsWith("data:image/", "Upload a valid image file.")
-			.max(2_800_000, "Image is too large."),
-	]),
+	image: z.union([z.literal(""), z.string().url("Upload a valid image file.")]),
 	tags: z.string().trim().max(500),
 	body: z.string().trim().min(10, "Body must be at least 10 characters."),
 });
