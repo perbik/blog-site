@@ -1,6 +1,6 @@
 import { type HandleUploadBody, handleUpload } from "@vercel/blob/client";
 
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-session";
 
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 

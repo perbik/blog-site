@@ -1,16 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-
-import {
-	createAdminSession,
-	deleteAdminSession,
-	isAdminConfigured,
-	isCorrectAdminPassword,
-	requireAdmin,
-} from "@/lib/admin-auth";
+import { isAdminConfigured, requireAdmin } from "@/lib/admin-session";
 import {
 	createPost,
 	restorePost,
@@ -21,6 +15,7 @@ import {
 	softDeletePosts,
 	updatePost,
 } from "@/lib/db/queries";
+import { auth } from "@/lib/utils/auth";
 
 export interface AdminActionState {
 	success: boolean;
@@ -29,8 +24,8 @@ export interface AdminActionState {
 	values?: Record<string, string>;
 }
 
-const passwordSchema = z.object({
-	password: z.string().trim().min(1, "Password is required."),
+const loginSchema = z.object({
+	password: z.string().min(1, "Password is required."),
 });
 
 const postSchema = z.object({
@@ -75,11 +70,11 @@ export async function authenticateAdmin(
 	if (!isAdminConfigured()) {
 		return {
 			success: false,
-			message: "Set ADMIN_PASSWORD first.",
+			message: "Configure Better Auth and the admin email first.",
 		};
 	}
 
-	const parsed = passwordSchema.safeParse({
+	const parsed = loginSchema.safeParse({
 		password: formData.get("password"),
 	});
 
@@ -90,11 +85,17 @@ export async function authenticateAdmin(
 		};
 	}
 
-	if (!isCorrectAdminPassword(parsed.data.password)) {
+	const email = process.env.ADMIN_EMAIL;
+	if (!email)
+		return { success: false, message: "Admin login is not configured." };
+
+	try {
+		await auth.api.signInEmail({
+			body: { email, password: parsed.data.password },
+		});
+	} catch {
 		return { success: false, message: "That password is not correct." };
 	}
-
-	await createAdminSession();
 
 	revalidatePath("/admin");
 	redirect("/admin");
@@ -310,7 +311,7 @@ export async function toggleAutoApproval(formData: FormData) {
 }
 
 export async function logoutAdmin() {
-	await deleteAdminSession();
+	await auth.api.signOut({ headers: await headers() });
 	revalidatePath("/admin");
 	redirect("/admin");
 }

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { NewPostForm } from "@/components/admin/NewPostForm";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAdminAuthenticated } from "@/lib/admin-session";
 import { getPostById } from "@/lib/db/queries";
 
 export const metadata: Metadata = {
