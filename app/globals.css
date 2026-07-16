@@ -151,31 +151,31 @@
 	will-change: opacity, transform;
 }
 
-html:has([data-post-accent="blue"]) {
+html[data-active-post-accent="blue"] {
 	--active-post-accent: #699df4;
 }
 
-html:has([data-post-accent="red"]) {
+html[data-active-post-accent="red"] {
 	--active-post-accent: #ea4d30;
 }
 
-html:has([data-post-accent="beige"]) {
+html[data-active-post-accent="beige"] {
 	--active-post-accent: #f8e8ce;
 }
 
-html:has([data-post-accent="gray"]) {
+html[data-active-post-accent="gray"] {
 	--active-post-accent: #8495ad;
 }
 
-html:has([data-post-accent="purple"]) {
+html[data-active-post-accent="purple"] {
 	--active-post-accent: #c389ba;
 }
 
-html:has([data-post-accent="green"]) {
+html[data-active-post-accent="green"] {
 	--active-post-accent: #848c41;
 }
 
-html:has([data-post-accent="yellow"]) {
+html[data-active-post-accent="yellow"] {
 	--active-post-accent: #f5b22d;
 }
 
@@ -202,7 +202,7 @@ html:has([data-post-accent="yellow"]) {
 	);
 }
 
-html:has([data-post-accent]) .site-header-glass::before {
+html[data-active-post-accent] .site-header-glass::before {
 	background: linear-gradient(
 		to bottom,
 		color-mix(in srgb, var(--active-post-accent) 34%, transparent) 0%,
@@ -212,13 +212,13 @@ html:has([data-post-accent]) .site-header-glass::before {
 	);
 }
 
-html:has([data-post-accent]) .site-accent-nav {
+html[data-active-post-accent] .site-accent-nav {
 	border-color: color-mix(in srgb, #000 12%, transparent);
 	background: color-mix(in srgb, var(--active-post-accent) 80%, transparent);
 	color: #0a0a0a;
 }
 
-html:has([data-post-accent]) .site-accent-nav.is-scrolled {
+html[data-active-post-accent] .site-accent-nav.is-scrolled {
 	background: color-mix(in srgb, var(--active-post-accent) 90%, transparent);
 }
 
@@ -238,11 +238,11 @@ html:has([data-post-accent]) .site-accent-nav.is-scrolled {
 	background: rgb(0 0 0 / 35%);
 }
 
-html:has([data-post-accent]) .site-scroll-progress::-webkit-progress-value {
+html[data-active-post-accent] .site-scroll-progress::-webkit-progress-value {
 	background: var(--active-post-accent);
 }
 
-html:has([data-post-accent]) .site-scroll-progress::-moz-progress-bar {
+html[data-active-post-accent] .site-scroll-progress::-moz-progress-bar {
 	background: var(--active-post-accent);
 }
 
@@ -306,4 +306,30 @@ html:has([data-post-accent]) .site-scroll-progress::-moz-progress-bar {
 ::selection {
 	background: #f5b22d;
 	color: #0a0a0a;
+}
+
+@media (max-width: 639px) {
+	.site-header-glass::before {
+		backdrop-filter: blur(7px) saturate(130%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html:focus-within {
+		scroll-behavior: auto;
+	}
+
+	.home-headline-track {
+		animation: none;
+		will-change: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto;
+		transition-duration: 0.01ms;
+		animation-duration: 0.01ms;
+		animation-iteration-count: 1;
+	}
 }

@@ -1,10 +1,11 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-placeholders";
 
 interface BlogHeroPost {
 	title: string;
@@ -24,10 +25,10 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 	);
 
 	const [activeIndex, setActiveIndex] = useState(0);
-	const [cursor, setCursor] = useState({ x: 0, y: 0, visible: false });
-	const [controlsHovered, setControlsHovered] = useState(false);
+	const cursorRef = useRef<HTMLDivElement>(null);
 	const touchStartX = useRef<number | null>(null);
 	const didSwipe = useRef(false);
+	const reduceMotion = useReducedMotion();
 
 	if (slides.length === 0) return null;
 
@@ -69,22 +70,21 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 
 				const bounds = event.currentTarget.getBoundingClientRect();
 
-				setCursor({
-					x: event.clientX - bounds.left,
-					y: event.clientY - bounds.top,
-					visible: !controlsHovered,
-				});
+				if (cursorRef.current) {
+					cursorRef.current.style.transform = `translate3d(${event.clientX - bounds.left + 22}px, ${event.clientY - bounds.top - 18}px, 0)`;
+					cursorRef.current.style.opacity = "1";
+				}
 			}}
 			onPointerEnter={(event) => {
 				if (event.pointerType !== "mouse") {
 					return;
 				}
 
-				setCursor((current) => ({ ...current, visible: true }));
+				if (cursorRef.current) cursorRef.current.style.opacity = "1";
 			}}
-			onPointerLeave={() =>
-				setCursor((current) => ({ ...current, visible: false }))
-			}
+			onPointerLeave={() => {
+				if (cursorRef.current) cursorRef.current.style.opacity = "0";
+			}}
 		>
 			<AnimatePresence mode="wait">
 				<motion.div
@@ -92,7 +92,7 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
-					transition={{ duration: 0.45, ease: "easeOut" }}
+					transition={{ duration: reduceMotion ? 0 : 0.45, ease: "easeOut" }}
 					className="absolute inset-0"
 				>
 					<Image
@@ -100,6 +100,8 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 						alt={activePost.title}
 						fill
 						priority={activeIndex === 0}
+						placeholder="blur"
+						blurDataURL={IMAGE_BLUR_DATA_URL}
 						sizes="100vw"
 						className="object-cover"
 					/>
@@ -124,10 +126,8 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 					type="button"
 					onClick={goToPrevious}
 					onPointerEnter={() => {
-						setControlsHovered(true);
-						setCursor((current) => ({ ...current, visible: false }));
+						if (cursorRef.current) cursorRef.current.style.opacity = "0";
 					}}
-					onPointerLeave={() => setControlsHovered(false)}
 					aria-label="Previous slide"
 					className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-black/35 font-mono text-sm font-bold uppercase backdrop-blur transition hover:bg-black/50 sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-3"
 				>
@@ -141,10 +141,8 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 					type="button"
 					onClick={goToNext}
 					onPointerEnter={() => {
-						setControlsHovered(true);
-						setCursor((current) => ({ ...current, visible: false }));
+						if (cursorRef.current) cursorRef.current.style.opacity = "0";
 					}}
-					onPointerLeave={() => setControlsHovered(false)}
 					aria-label="Next slide"
 					className="flex size-11 cursor-pointer items-center justify-center rounded-full bg-black/35 font-mono text-sm font-bold uppercase backdrop-blur transition hover:bg-black/50 sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-3"
 				>
@@ -160,7 +158,7 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 						initial={{ opacity: 0, y: 18 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: -18 }}
-						transition={{ duration: 0.45 }}
+						transition={{ duration: reduceMotion ? 0 : 0.45 }}
 					>
 						<p className="mb-4 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-white/70">
 							Recent blog
@@ -178,18 +176,12 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 				</AnimatePresence>
 			</div>
 
-			<motion.div
-				className="pointer-events-none absolute left-0 top-0 z-50 hidden rounded-full bg-white px-4 py-1.5 font-mono text-sm font-bold uppercase leading-none text-black shadow-[0_10px_28px_rgba(0,0,0,0.28)] sm:block"
-				animate={{
-					x: cursor.x + 22,
-					y: cursor.y - 18,
-					opacity: cursor.visible && !controlsHovered ? 1 : 0,
-					scale: cursor.visible && !controlsHovered ? 1 : 0.96,
-				}}
-				transition={{ type: "spring", stiffness: 520, damping: 36 }}
+			<div
+				ref={cursorRef}
+				className="pointer-events-none absolute left-0 top-0 z-50 hidden rounded-full bg-white px-4 py-1.5 font-mono text-sm font-bold uppercase leading-none text-black opacity-0 shadow-[0_10px_28px_rgba(0,0,0,0.28)] transition-opacity sm:block"
 			>
 				Read now
-			</motion.div>
+			</div>
 
 			<div className="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 gap-2">
 				{slides.map((post, index) => (

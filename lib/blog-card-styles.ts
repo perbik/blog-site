@@ -18,24 +18,22 @@ const cardColorNames = [
 	"yellow",
 ] as const;
 
-function getPostColorIndex(posts: Array<{ slug: string }>, slug: string) {
-	const index = posts.findIndex((post) => post.slug === slug);
+function getPostColorIndex(slug: string) {
+	let hash = 0;
 
-	return (index >= 0 ? index : 0) % cardColorClasses.length;
+	for (const character of slug) {
+		hash = (hash * 31 + character.charCodeAt(0)) | 0;
+	}
+
+	return Math.abs(hash) % cardColorClasses.length;
 }
 
-export function getCardColorClassForSlug(
-	posts: Array<{ slug: string }>,
-	slug: string,
-) {
-	return cardColorClasses[getPostColorIndex(posts, slug)];
+export function getCardColorClassForSlug(slug: string) {
+	return cardColorClasses[getPostColorIndex(slug)];
 }
 
-export function getCardColorNameForSlug(
-	posts: Array<{ slug: string }>,
-	slug: string,
-) {
-	return cardColorNames[getPostColorIndex(posts, slug)];
+export function getCardColorNameForSlug(slug: string) {
+	return cardColorNames[getPostColorIndex(slug)];
 }
 
 const titleCharactersPerLine = 24;

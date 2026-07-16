@@ -1,4 +1,5 @@
 import { and, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
+import { cacheLife, cacheTag } from "next/cache";
 import { db } from "./index";
 import { commentSettings, comments, posts } from "./schema";
 
@@ -40,8 +41,30 @@ export function getPostBySlug(slug: string) {
 		.orderBy(desc(posts.createdAt), desc(posts.id));
 }
 
+export async function getPostMetadataBySlug(slug: string) {
+	"use cache";
+	cacheLife("max");
+	cacheTag("posts", `post:${slug}`);
+
+	const [post] = await db
+		.select({ title: posts.title, body: posts.body, image: posts.image })
+		.from(posts)
+		.where(and(eq(posts.slug, slug), isNull(posts.deletedAt)))
+		.limit(1);
+
+	return post;
+}
+
 export async function getPostWithCommentsBySlug(slug: string) {
-	const [post] = await getPostBySlug(slug);
+	"use cache";
+	cacheLife("max");
+	cacheTag("posts", `post:${slug}`, `post-comments:${slug}`);
+
+	const [post] = await db
+		.select()
+		.from(posts)
+		.where(and(eq(posts.slug, slug), isNull(posts.deletedAt)))
+		.limit(1);
 
 	if (!post) {
 		return undefined;
@@ -162,7 +185,70 @@ export function getPosts(tags?: string | string[]) {
 		.orderBy(desc(posts.createdAt), desc(posts.id));
 }
 
+const postSummarySelection = {
+	id: posts.id,
+	title: posts.title,
+	slug: posts.slug,
+	image: posts.image,
+	tags: posts.tags,
+	createdAt: posts.createdAt,
+};
+
+export async function getPostSummaries(tags: string[] = []) {
+	"use cache";
+	cacheLife("max");
+	cacheTag("posts", "post-tags");
+
+	return db
+		.select(postSummarySelection)
+		.from(posts)
+		.where(
+			tags.length > 0
+				? and(
+						isNull(posts.deletedAt),
+						sql`${posts.tags} && ARRAY[${sql.join(
+							tags.map((tag) => sql`${tag}`),
+							sql`, `,
+						)}]::text[]`,
+					)
+				: isNull(posts.deletedAt),
+		)
+		.orderBy(desc(posts.createdAt), desc(posts.id));
+}
+
+export async function getHeroPosts() {
+	"use cache";
+	cacheLife("max");
+	cacheTag("posts", "hero-posts");
+
+	return db
+		.select(postSummarySelection)
+		.from(posts)
+		.where(and(isNull(posts.deletedAt), isNotNull(posts.image)))
+		.orderBy(desc(posts.createdAt), desc(posts.id))
+		.limit(5);
+}
+
+export async function getApprovedCommentCounts() {
+	"use cache";
+	cacheLife("max");
+	cacheTag("comment-counts");
+
+	return db
+		.select({
+			postId: comments.postId,
+			count: sql<number>`count(*)::int`,
+		})
+		.from(comments)
+		.innerJoin(posts, eq(comments.postId, posts.id))
+		.where(and(eq(comments.approved, true), isNull(posts.deletedAt)))
+		.groupBy(comments.postId);
+}
+
 export async function getPostTags(): Promise<string[]> {
+	"use cache";
+	cacheLife("max");
+	cacheTag("posts", "post-tags");
 	const rows = await db
 		.select({ tag: sql<string>`unnest(${posts.tags})` })
 		.from(posts)

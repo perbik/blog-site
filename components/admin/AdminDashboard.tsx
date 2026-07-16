@@ -8,10 +8,10 @@ import { cn } from "@/lib/utils";
 
 interface AdminDashboardProps {
 	activeTab: "dashboard" | "compose" | "posts" | "moderation";
-	posts: React.ComponentProps<typeof PostsTable>["posts"];
-	deletedPosts: React.ComponentProps<typeof PostsTable>["deletedPosts"];
-	comments: React.ComponentProps<typeof CommentModeration>["comments"];
-	autoApproveComments: boolean;
+	posts?: React.ComponentProps<typeof PostsTable>["posts"];
+	deletedPosts?: React.ComponentProps<typeof PostsTable>["deletedPosts"];
+	comments?: React.ComponentProps<typeof CommentModeration>["comments"];
+	autoApproveComments?: boolean;
 }
 
 export function AdminDashboard({
@@ -21,25 +21,21 @@ export function AdminDashboard({
 	comments,
 	autoApproveComments,
 }: AdminDashboardProps) {
-	const hiddenCount = comments.filter((comment) => !comment.approved).length;
-	const approvedCount = comments.length - hiddenCount;
+	const safePosts = posts ?? [];
+	const safeDeletedPosts = deletedPosts ?? [];
+	const safeComments = comments ?? [];
+	const hiddenCount = safeComments.filter(
+		(comment) => !comment.approved,
+	).length;
+	const approvedCount = safeComments.length - hiddenCount;
 	const stats = [
-		{ label: "Posts", value: posts.length, color: "bg-[#F8E8CE]" },
+		{ label: "Posts", value: safePosts.length, color: "bg-[#F8E8CE]" },
 		{ label: "Approved comments", value: approvedCount, color: "bg-[#848C41]" },
 		{ label: "Hidden comments", value: hiddenCount, color: "bg-[#EA4D30]" },
 	];
 	return (
 		<main className="min-h-screen bg-[#0a0a0a] px-4 pb-20 pt-30 text-black sm:px-6">
 			<div className="mx-auto max-w-7xl space-y-4">
-				{activeTab === "dashboard" ? (
-					<header className="rounded-[28px] bg-[#F5B22D] px-7 py-8 sm:px-10 sm:py-10">
-						<p className="text-sm font-semibold">Admin panel</p>
-						<h1 className="mt-2 font-heading text-5xl font-bold uppercase leading-none sm:text-7xl">
-							Dashboard
-						</h1>
-					</header>
-				) : null}
-
 				<nav className="flex flex-wrap gap-2" aria-label="Admin sections">
 					<Link
 						href="/admin"
@@ -93,6 +89,15 @@ export function AdminDashboard({
 				</nav>
 
 				{activeTab === "dashboard" ? (
+					<header className="rounded-[28px] bg-[#F5B22D] px-7 py-8 sm:px-10 sm:py-10">
+						<p className="text-sm font-semibold">Admin panel</p>
+						<h1 className="mt-2 font-heading text-5xl font-bold uppercase leading-none sm:text-7xl">
+							Dashboard
+						</h1>
+					</header>
+				) : null}
+
+				{activeTab === "dashboard" ? (
 					<div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
 						{stats.map((stat) => (
 							<div
@@ -111,11 +116,11 @@ export function AdminDashboard({
 				) : activeTab === "compose" ? (
 					<NewPostForm />
 				) : activeTab === "posts" ? (
-					<PostsTable posts={posts} deletedPosts={deletedPosts} />
+					<PostsTable posts={safePosts} deletedPosts={safeDeletedPosts} />
 				) : (
 					<section className="space-y-4">
-						<AutoApprovalToggle enabled={autoApproveComments} />
-						<CommentModeration comments={comments} />
+						<AutoApprovalToggle enabled={autoApproveComments ?? false} />
+						<CommentModeration comments={safeComments} />
 					</section>
 				)}
 			</div>

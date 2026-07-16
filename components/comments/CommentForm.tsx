@@ -89,7 +89,7 @@ export function CommentForm({
 				{authorNameError ? (
 					<p
 						id="comment-author-name-error"
-						className="mt-1 px-2 font-mono text-xs text-[#EA4D30]"
+						className="mt-1 px-2 font-mono text-xs text-[#9f2013]"
 					>
 						{authorNameError}
 					</p>

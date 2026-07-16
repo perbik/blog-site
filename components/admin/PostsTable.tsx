@@ -288,8 +288,8 @@ export function PostsTable({
 								: "text-white/60 hover:text-white",
 						)}
 					>
-						{option} ({option === "active" ? posts.length : deletedPosts.length}
-						)
+						{option === "active" ? "Active" : "Deleted"} (
+						{option === "active" ? posts.length : deletedPosts.length})
 					</button>
 				))}
 			</fieldset>
@@ -388,7 +388,7 @@ export function PostsTable({
 										? "No posts match this tag."
 										: view === "active"
 											? "No active posts to manage."
-											: "Trash is empty."}
+											: "No deleted posts to manage."}
 								</TableCell>
 							</TableRow>
 						)}
