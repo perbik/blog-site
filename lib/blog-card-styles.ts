@@ -30,6 +30,7 @@ const titleCharactersPerLine = 24;
 const maximumVisibleTitleLines = 3;
 
 function getBlogCardTitleLineCount(title: string) {
+	// Estimate wrapped title lines to choose card height
 	const words = title.trim().split(/\s+/).filter(Boolean);
 
 	if (words.length === 0) return 1;

@@ -12,6 +12,7 @@ export async function POST(request: Request) {
 			body,
 			request,
 			onBeforeGenerateToken: async () => {
+				// Validate authorization and upload constraints before issuing a token.
 				await requireAdmin();
 
 				return {

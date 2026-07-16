@@ -8,6 +8,7 @@ const MAX_IMAGE_DIMENSION = 6000;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 async function getImageDimensions(file: File) {
+	// Object URLs inspect local image dimensions without uploading or base64-encoding the file
 	const url = URL.createObjectURL(file);
 
 	try {

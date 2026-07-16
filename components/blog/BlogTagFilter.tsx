@@ -22,6 +22,7 @@ interface BlogTagFilterProps {
 function getBlogHref(tags: string[]) {
 	const params = new URLSearchParams();
 
+	// Repeated tag parameters keep multi-select filters shareable in the URL
 	for (const tag of tags) {
 		params.append("tag", tag);
 	}

@@ -1,16 +1,30 @@
 import { defineRelations, sql } from "drizzle-orm";
-import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	pgTable,
+	text,
+	timestamp,
+	uniqueIndex,
+	uuid,
+} from "drizzle-orm/pg-core";
 
-export const posts = pgTable("posts", {
-	id: uuid("id").primaryKey().defaultRandom(),
-	title: text("title").notNull(),
-	slug: text("slug").notNull().unique(),
-	image: text("image"),
-	tags: text("tags").array().notNull().default(sql`ARRAY[]::text[]`),
-	body: text("body").notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	deletedAt: timestamp("deleted_at"),
-});
+export const posts = pgTable(
+	"posts",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		title: text("title").notNull(),
+		slug: text("slug").notNull().unique(),
+		image: text("image"),
+		tags: text("tags").array().notNull().default(sql`ARRAY[]::text[]`),
+		body: text("body").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		deletedAt: timestamp("deleted_at"),
+	},
+	(table) => [
+		// Lowercase indexing treats title casing variants as duplicates
+		uniqueIndex("posts_title_unique").on(sql`lower(${table.title})`),
+	],
+);
 
 export const comments = pgTable("comments", {
 	id: uuid("id").primaryKey().defaultRandom(),

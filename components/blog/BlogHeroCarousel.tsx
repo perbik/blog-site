@@ -59,6 +59,7 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 
 				if (Math.abs(distance) < 50) return;
 
+				// Mark the gesture so the full-slide link does not open after a swipe
 				didSwipe.current = true;
 				if (distance > 0) goToPrevious();
 				else goToNext();
@@ -70,6 +71,7 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 
 				const bounds = event.currentTarget.getBoundingClientRect();
 
+				// Move the decorative cursor directly to avoid a React render on every pointer event
 				if (cursorRef.current) {
 					cursorRef.current.style.transform = `translate3d(${event.clientX - bounds.left + 22}px, ${event.clientY - bounds.top - 18}px, 0)`;
 					cursorRef.current.style.opacity = "1";
@@ -86,6 +88,7 @@ export function BlogHeroCarousel({ posts }: BlogHeroCarouselProps) {
 				if (cursorRef.current) cursorRef.current.style.opacity = "0";
 			}}
 		>
+			{/* Reduced-motion preference keeps content changes but removes animation time */}
 			<AnimatePresence mode="wait">
 				<motion.div
 					key={activePost.slug}

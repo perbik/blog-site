@@ -1,5 +1,6 @@
 import { bootstrapAuth } from "@/lib/utils/auth";
 
+// Create the first admin that permits registration
 async function main() {
 	const email = process.env.ADMIN_EMAIL;
 	const password = process.env.ADMIN_PASSWORD;
