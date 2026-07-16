@@ -1,68 +1,118 @@
 # echo
 
-A full-stack personal blog built with Next.js, Neon Postgres, Drizzle ORM, Server Actions, Zod, Tailwind CSS, and Markdown.
+`echo` is a full-stack personal blog built with Next.js 16, React 19, Neon Postgres, Drizzle ORM, Better Auth, Vercel Blob, Server Actions, Zod, Tailwind CSS, and Markdown
+
+The public site includes a hero carousel, searchable and tag-filtered blog listings, Markdown post pages, and moderated comments. The protected admin dashboard supports post creation and editing, image uploads, soft deletion and restoration, bulk actions, permanent deletion, and comment approval settings
+
+## Requirements
+
+- Node.js 20 or later
+- pnpm
+- A Neon Postgres database
+- A Vercel Blob store if cover-image uploads are needed locally
 
 ## Local setup
 
-1. Install dependencies:
+1. Install dependencies
 
    ```bash
    pnpm install
    ```
 
-2. Copy `.env.example` to `.env.local` and set:
+2. Copy `.env.example` to `.env.local`
 
-   ```env
-   DATABASE_URL=your-neon-connection-string
-   ADMIN_PASSWORD=your-private-admin-password
+   ```bash
+   cp .env.example .env.local
    ```
 
-3. Apply committed migrations:
+3. Configure the environment variables in `.env.local`
+
+   ```env
+   DATABASE_URL=postgresql://user:password@host/database?sslmode=require
+   BETTER_AUTH_SECRET=replace-with-a-generated-secret
+   BETTER_AUTH_URL=http://localhost:3000
+   ADMIN_EMAIL=admin@example.com
+   ADMIN_PASSWORD=replace-with-a-strong-private-password
+   ```
+
+   `ADMIN_PASSWORD` is used by the one-time admin bootstrap command. Runtime login and sessions are managed by Better Auth
+
+4. Apply the committed database migrations
 
    ```bash
    pnpm db:migrate
    ```
 
-4. Seed posts and approved sample comments:
+5. Seed sample content if needed
 
    ```bash
    pnpm db:seed
    ```
 
-5. Start the app:
+6. Create the configured admin account
+
+   ```bash
+   pnpm auth:bootstrap
+   ```
+
+   The bootstrap command is safe to rerun when the admin already exists
+
+7. Start the development server
 
    ```bash
    pnpm dev
    ```
 
-Open `http://localhost:3000`. The admin dashboard is at `/admin`.
+Open `http://localhost:3000`. The admin dashboard is available at `http://localhost:3000/admin`
 
-## Database workflow
+## Database migrations
 
-After editing `lib/db/schema.ts`, generate and apply a committed SQL migration:
+The Drizzle schema is defined in:
+
+- `lib/db/schema.ts` for posts, comments, and comment settings
+- `lib/db/auth-schema.ts` for Better Auth users, accounts, and sessions
+
+After changing either schema, generate a named migration and review its SQL before applying it
 
 ```bash
-pnpm db:generate
+pnpm db:generate --name=describe-the-change
 pnpm db:migrate
+```
+
+Committed migration folders in `drizzle/` are the database's chronological history and should not be deleted after deployment
+
+To inspect the configured database with Drizzle Studio:
+
+```bash
 pnpm db:studio
 ```
 
-Do not use `drizzle-kit push` as a replacement for migration files.
+## Seeding
 
-## Admin and moderation
+Seed all sample posts and comments:
 
-Admin authentication uses the configured `ADMIN_PASSWORD`. A successful login creates an eight-hour, HTTP-only signed cookie, and every admin mutation validates that cookie on the server. Changing the password invalidates existing sessions. No user or session records are stored in the database.
+```bash
+pnpm db:seed
+```
 
-New comments are saved with `approved = false`. They appear publicly only after approval from the moderation tab.
+Seed only posts:
 
-## Markdown posts
+```bash
+pnpm db:seed:posts
+```
 
-Post bodies accept Markdown, including headings, lists, links, blockquotes, code, tables, and GitHub-flavored Markdown. Raw HTML is not enabled.
+Seed only comments:
+
+```bash
+pnpm db:seed:comments
+```
+
+Run migrations before seeding because the seed scripts require the application tables to exist. Direct seeding bypasses the deployed application's cache invalidation, so a deployed site may need an in-app post update or a new deployment before cached lists reflect seeded data
 
 ## Verification
 
 ```bash
 pnpm check
-pnpm tsc --noEmit
+pnpm exec tsc --noEmit
 pnpm build
 ```
