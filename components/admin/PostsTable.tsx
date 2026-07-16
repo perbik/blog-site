@@ -30,6 +30,7 @@ import {
 } from "react";
 
 import { BulkDeletePostsDialog } from "@/components/admin/BulkDeletePostsDialog";
+import { PermanentDeletePostsDialog } from "@/components/admin/PermanentDeletePostsDialog";
 import { PostDeleteForm } from "@/components/admin/PostDeleteForm";
 import {
 	BulkRestorePostsForm,
@@ -228,8 +229,12 @@ export function PostsTable({
 							/>
 						</div>
 					) : (
-						<div className="flex justify-end">
+						<div className="flex justify-end gap-2">
 							<RestorePostForm postId={row.original.id} />
+							<PermanentDeletePostsDialog
+								postIds={[row.original.id]}
+								postTitle={row.original.title}
+							/>
 						</div>
 					),
 				enableSorting: false,
@@ -338,12 +343,15 @@ export function PostsTable({
 				{view === "active" ? (
 					<BulkDeletePostsDialog postIds={selectedPostIds} />
 				) : (
-					<BulkRestorePostsForm postIds={selectedPostIds} />
+					<div className="flex flex-wrap gap-2">
+						<BulkRestorePostsForm postIds={selectedPostIds} />
+						<PermanentDeletePostsDialog postIds={selectedPostIds} bulk />
+					</div>
 				)}
 			</div>
 
 			<div className="overflow-hidden rounded-[28px] bg-white">
-				<Table className="min-w-[820px] text-left">
+				<Table className="min-w-205 text-left">
 					<TableHeader className="border-b border-black/10 bg-[#F8E8CE] text-xs uppercase tracking-wider text-black/55">
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id} className="hover:bg-transparent">

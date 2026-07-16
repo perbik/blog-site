@@ -22,13 +22,14 @@ export function AdminLoginForm() {
 					Admin panel
 				</p>
 				<h1 className="mt-3 font-heading text-5xl font-semibold leading-[0.9]">
-					Welcome back.
+					Welcome!
 				</h1>
 				<p className="mt-4 text-sm leading-6 text-black/55">
-					Enter the admin password to compose posts and moderate comments.
+					Enter the admin password to create blogs, manage posts, and moderate
+					comments.
 				</p>
 
-				<form action={formAction} className="mt-8" noValidate>
+				<form action={formAction} className="mt-5" noValidate>
 					<label
 						htmlFor="admin-password"
 						className="mb-2 block text-sm font-medium"
@@ -44,7 +45,7 @@ export function AdminLoginForm() {
 						aria-describedby={
 							passwordError ? "admin-password-error" : undefined
 						}
-						className="h-12 w-full rounded-xl border border-black/12 bg-[#f7f7f5] px-4 outline-none transition focus:border-black/30 focus:ring-4 focus:ring-black/6 aria-[invalid=true]:border-[#EA4D30]"
+						className="h-12 w-full rounded-xl border border-black/12 bg-[#f7f7f5] px-4 outline-none transition focus:border-black/30 focus:ring-4 focus:ring-black/6 aria-invalid:border-[#EA4D30]"
 					/>
 					{passwordError ? (
 						<p

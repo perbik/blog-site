@@ -157,6 +157,20 @@ export function restorePosts(postIds: string[]) {
 		.returning({ id: posts.id });
 }
 
+export function permanentlyDeletePost(postId: string) {
+	return db
+		.delete(posts)
+		.where(and(eq(posts.id, postId), isNotNull(posts.deletedAt)))
+		.returning({ id: posts.id });
+}
+
+export function permanentlyDeletePosts(postIds: string[]) {
+	return db
+		.delete(posts)
+		.where(and(inArray(posts.id, postIds), isNotNull(posts.deletedAt)))
+		.returning({ id: posts.id });
+}
+
 export function setCommentApproval(commentId: string, approved: boolean) {
 	return db
 		.update(comments)
@@ -214,6 +228,19 @@ export async function getPostSummaries(tags: string[] = []) {
 				: isNull(posts.deletedAt),
 		)
 		.orderBy(desc(posts.createdAt), desc(posts.id));
+}
+
+export async function getPostColorOrder() {
+	"use cache";
+	cacheLife("max");
+	cacheTag("posts");
+
+	const orderedPosts = await db
+		.select({ slug: posts.slug })
+		.from(posts)
+		.orderBy(posts.createdAt, posts.id);
+
+	return orderedPosts.map((post) => post.slug);
 }
 
 export async function getHeroPosts() {
