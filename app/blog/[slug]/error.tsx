@@ -18,7 +18,7 @@ export default function BlogPostError({ reset }: BlogPostErrorProps) {
 					This story went offline.
 				</h1>
 				<p className="mx-auto mt-5 max-w-md leading-7 text-black/65">
-					We couldn&apos;t load this post right now. Please try it again.
+					We couldn't load this post right now. Please try it again.
 				</p>
 				<Button
 					type="button"
