@@ -1,39 +1,29 @@
 const cardColorClasses = [
-	"bg-[#699DF4]",
 	"bg-[#EA4D30]",
+	"bg-[#699DF4]",
 	"bg-[#F8E8CE]",
 	"bg-[#8495AD]",
-	"bg-[#C389BA]",
-	"bg-[#848C41]",
 	"bg-[#F5B22D]",
+	"bg-[#848C41]",
+	"bg-[#C389BA]",
 ] as const;
 
 const cardColorNames = [
-	"blue",
 	"red",
+	"blue",
 	"beige",
 	"gray",
-	"purple",
-	"green",
 	"yellow",
+	"green",
+	"purple",
 ] as const;
 
-function getPostColorIndex(slug: string) {
-	let hash = 0;
-
-	for (const character of slug) {
-		hash = (hash * 31 + character.charCodeAt(0)) | 0;
-	}
-
-	return Math.abs(hash) % cardColorClasses.length;
+export function getCardColorClassForIndex(index: number) {
+	return cardColorClasses[index % cardColorClasses.length];
 }
 
-export function getCardColorClassForSlug(slug: string) {
-	return cardColorClasses[getPostColorIndex(slug)];
-}
-
-export function getCardColorNameForSlug(slug: string) {
-	return cardColorNames[getPostColorIndex(slug)];
+export function getCardColorNameForIndex(index: number) {
+	return cardColorNames[index % cardColorNames.length];
 }
 
 const titleCharactersPerLine = 24;

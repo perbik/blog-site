@@ -99,7 +99,7 @@ export function BlogBentoGrid({
 
 	return (
 		<section className="min-h-screen bg-[#0a0a0a]" aria-label="Blog posts">
-			<div className="mx-auto flex w-full max-w-[1280px] flex-col px-5 pb-20 pt-[100px] sm:px-6">
+			<div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-20 pt-25 sm:px-6">
 				<div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
 					<div>
 						<p className="mb-2 font-mono text-xs font-medium uppercase tracking-[0.18em] text-white/40">
@@ -158,17 +158,17 @@ export function BlogBentoGrid({
 
 				{filteredPosts.length > 0 ? (
 					<>
-						<div className="grid grid-cols-1 gap-[15px] sm:hidden">
+						<div className="grid grid-cols-1 gap-3.75 sm:hidden">
 							{visiblePosts.map(({ post, index }) => (
 								<div key={post.slug}>{cards[index]}</div>
 							))}
 						</div>
 
-						<div className="hidden grid-cols-2 items-start gap-[15px] sm:grid lg:hidden">
+						<div className="hidden grid-cols-2 items-start gap-3.75 sm:grid lg:hidden">
 							{getColumns(2).map((column) => (
 								<div
 									key={`tablet-${column.id}`}
-									className="flex flex-col gap-[15px]"
+									className="flex flex-col gap-3.75"
 								>
 									{column.posts.map(({ post, index }) => (
 										<div key={post.slug}>{cards[index]}</div>
@@ -177,11 +177,11 @@ export function BlogBentoGrid({
 							))}
 						</div>
 
-						<div className="hidden grid-cols-3 items-start gap-[15px] lg:grid">
+						<div className="hidden grid-cols-3 items-start gap-3.75 lg:grid">
 							{getColumns(3).map((column) => (
 								<div
 									key={`desktop-${column.id}`}
-									className="flex flex-col gap-[15px]"
+									className="flex flex-col gap-3.75"
 								>
 									{column.posts.map(({ post, index }) => (
 										<div key={post.slug}>{cards[index]}</div>
