@@ -2,6 +2,7 @@
 
 import { Search, X } from "lucide-react";
 import {
+	type ReactNode,
 	useEffect,
 	useMemo,
 	useRef,
@@ -10,9 +11,7 @@ import {
 } from "react";
 
 import { BlogTagFilter } from "@/components/blog/BlogTagFilter";
-import { BlogCard } from "@/components/cards/BlogCard";
 import { PaginationNav } from "@/components/layout/PaginationNav";
-import { getBlogCardHeightClass } from "@/lib/blog-card-styles";
 
 interface BlogListPost {
 	title: string;
@@ -22,10 +21,12 @@ interface BlogListPost {
 	colorClassName: string;
 	authorName?: string | null;
 	createdAt: Date;
+	commentCount: number;
 }
 
 interface BlogBentoGridProps {
 	posts: BlogListPost[];
+	cards: ReactNode[];
 	tags: string[];
 	activeTags?: string[];
 }
@@ -43,23 +44,9 @@ function getMobileSnapshot() {
 	return window.matchMedia(mobileQuery).matches;
 }
 
-function BlogGridCard({ post }: { post: BlogListPost }) {
-	return (
-		<BlogCard
-			title={post.title}
-			href={`/blog/${post.slug}`}
-			image={post.image}
-			tags={post.tags}
-			colorClassName={post.colorClassName}
-			authorName={post.authorName}
-			createdAt={post.createdAt}
-			heightClassName={getBlogCardHeightClass(post.title)}
-		/>
-	);
-}
-
 export function BlogBentoGrid({
 	posts,
+	cards,
 	tags,
 	activeTags = [],
 }: BlogBentoGridProps) {
@@ -75,9 +62,10 @@ export function BlogBentoGrid({
 	const postsPerPage = isMobile ? 5 : 15;
 	const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
 	const filteredPosts = useMemo(() => {
-		if (!normalizedQuery) return posts;
+		const indexedPosts = posts.map((post, index) => ({ post, index }));
+		if (!normalizedQuery) return indexedPosts;
 
-		return posts.filter((post) =>
+		return indexedPosts.filter(({ post }) =>
 			[post.title, post.authorName ?? "", ...post.tags]
 				.join(" ")
 				.toLocaleLowerCase()
@@ -171,8 +159,8 @@ export function BlogBentoGrid({
 				{filteredPosts.length > 0 ? (
 					<>
 						<div className="grid grid-cols-1 gap-[15px] sm:hidden">
-							{visiblePosts.map((post) => (
-								<BlogGridCard key={post.slug} post={post} />
+							{visiblePosts.map(({ post, index }) => (
+								<div key={post.slug}>{cards[index]}</div>
 							))}
 						</div>
 
@@ -182,8 +170,8 @@ export function BlogBentoGrid({
 									key={`tablet-${column.id}`}
 									className="flex flex-col gap-[15px]"
 								>
-									{column.posts.map((post) => (
-										<BlogGridCard key={post.slug} post={post} />
+									{column.posts.map(({ post, index }) => (
+										<div key={post.slug}>{cards[index]}</div>
 									))}
 								</div>
 							))}
@@ -195,8 +183,8 @@ export function BlogBentoGrid({
 									key={`desktop-${column.id}`}
 									className="flex flex-col gap-[15px]"
 								>
-									{column.posts.map((post) => (
-										<BlogGridCard key={post.slug} post={post} />
+									{column.posts.map(({ post, index }) => (
+										<div key={post.slug}>{cards[index]}</div>
 									))}
 								</div>
 							))}

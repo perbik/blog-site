@@ -20,6 +20,20 @@ import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 
 const initialState: AdminActionState = { success: false };
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
+const MAX_IMAGE_DIMENSION = 6000;
+
+async function getImageDimensions(file: File) {
+	const url = URL.createObjectURL(file);
+
+	try {
+		const image = new window.Image();
+		image.src = url;
+		await image.decode();
+		return { width: image.naturalWidth, height: image.naturalHeight };
+	} finally {
+		URL.revokeObjectURL(url);
+	}
+}
 
 function slugify(value: string) {
 	return value
@@ -68,11 +82,26 @@ export function NewPostForm({ post }: PostFormProps = {}) {
 			return setImageError("Choose an image file.");
 		if (file.size > MAX_IMAGE_BYTES)
 			return setImageError("Image must be 2 MB or smaller.");
+		if (
+			!(["image/jpeg", "image/png", "image/webp"] as const).includes(
+				file.type as "image/jpeg" | "image/png" | "image/webp",
+			)
+		)
+			return setImageError("Use a JPEG, PNG, or WebP image.");
 
 		setImageUploading(true);
 		setImageError("");
 
 		try {
+			const dimensions = await getImageDimensions(file);
+			if (
+				dimensions.width > MAX_IMAGE_DIMENSION ||
+				dimensions.height > MAX_IMAGE_DIMENSION
+			) {
+				setImageError("Image dimensions must be 6000 pixels or smaller.");
+				return;
+			}
+
 			const blob = await upload(`blog/${file.name}`, file, {
 				access: "public",
 				handleUploadUrl: "/api/blob/upload",

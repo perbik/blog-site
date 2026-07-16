@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { toggleCommentApproval } from "@/app/admin/actions";
 import { ModerationButton } from "@/components/admin/ModerationButton";
+import { PaginationNav } from "@/components/layout/PaginationNav";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -16,7 +17,6 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PaginationNav } from "@/components/layout/PaginationNav";
 
 interface ModerationComment {
 	id: string;
