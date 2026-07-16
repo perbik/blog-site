@@ -11,6 +11,8 @@ const messages = {
 	bulkDeleted: "Selected blog posts deleted successfully.",
 	restored: "Blog post restored successfully.",
 	bulkRestored: "Selected blog posts restored successfully.",
+	permanentlyDeleted: "Blog post permanently deleted.",
+	bulkPermanentlyDeleted: "Selected blog posts permanently deleted.",
 } as const;
 
 export function PostActionToast() {

@@ -15,11 +15,11 @@ const socialLinks = [
 	{ icon: faGlobe, label: "Portfolio", href: "https://fervicmar.vercel.app/" },
 ];
 
-interface SiteFooterProps {
+interface FooterProps {
 	dark?: boolean;
 }
 
-export function SiteFooter({ dark = false }: SiteFooterProps) {
+export function Footer({ dark = false }: FooterProps) {
 	return (
 		<footer
 			className={cn(

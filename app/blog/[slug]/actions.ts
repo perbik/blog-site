@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
 
 import {
@@ -76,6 +76,8 @@ export async function addComment(
 	});
 
 	revalidatePath("/blog/[slug]", "page");
+	updateTag(`post-comments:${slug}`);
+	updateTag("comment-counts");
 
 	return {
 		success: true,

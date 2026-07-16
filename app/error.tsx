@@ -18,8 +18,7 @@ export default function HomeError({ reset }: HomeErrorProps) {
 					echo hit a quiet patch.
 				</h1>
 				<p className="mx-auto mt-5 max-w-md leading-7 text-white/60">
-					We couldn&apos;t load this page right now. Please try again in a
-					moment.
+					We couldn't load this page right now. Please try again in a moment.
 				</p>
 				<Button
 					type="button"

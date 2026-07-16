@@ -1,12 +1,15 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+
 import { isAdminConfigured, requireAdmin } from "@/lib/admin-session";
 import {
 	createPost,
+	permanentlyDeletePost,
+	permanentlyDeletePosts,
 	restorePost,
 	restorePosts,
 	setAutoApproveComments,
@@ -16,6 +19,7 @@ import {
 	updatePost,
 } from "@/lib/db/queries";
 import { auth } from "@/lib/utils/auth";
+import { slugify } from "@/lib/utils/post-utils";
 
 export interface AdminActionState {
 	success: boolean;
@@ -54,14 +58,6 @@ const moderationSchema = z.object({
 const autoApprovalSchema = z.object({
 	autoApprove: z.enum(["true", "false"]),
 });
-
-function createSlug(title: string) {
-	return title
-		.toLowerCase()
-		.trim()
-		.replace(/[^a-z0-9]+/g, "-")
-		.replace(/^-+|-+$/g, "");
-}
 
 export async function authenticateAdmin(
 	_prevState: AdminActionState,
@@ -124,7 +120,7 @@ export async function createPostAction(
 		};
 	}
 
-	const slug = parsed.data.slug || createSlug(parsed.data.title);
+	const slug = parsed.data.slug || slugify(parsed.data.title);
 	if (!slug) {
 		return {
 			success: false,
@@ -154,6 +150,9 @@ export async function createPostAction(
 
 	revalidatePath("/");
 	revalidatePath("/blog");
+	updateTag("posts");
+	updateTag("post-tags");
+	updateTag("hero-posts");
 	redirect(`/blog/${slug}?postAction=created`);
 }
 
@@ -182,7 +181,7 @@ export async function updatePostAction(
 		};
 	}
 
-	const slug = parsed.data.slug || createSlug(parsed.data.title);
+	const slug = parsed.data.slug || slugify(parsed.data.title);
 	if (!slug) {
 		return {
 			success: false,
@@ -217,6 +216,10 @@ export async function updatePostAction(
 	revalidatePath("/blog");
 	revalidatePath("/admin");
 	revalidatePath(`/blog/${slug}`);
+	updateTag("posts");
+	updateTag("post-tags");
+	updateTag("hero-posts");
+	updateTag(`post:${slug}`);
 	redirect("/admin?tab=posts&postAction=updated");
 }
 
@@ -230,6 +233,9 @@ export async function deletePostAction(formData: FormData) {
 	revalidatePath("/");
 	revalidatePath("/blog");
 	revalidatePath("/admin");
+	updateTag("posts");
+	updateTag("post-tags");
+	updateTag("hero-posts");
 	redirect("/admin?tab=posts&postAction=deleted");
 }
 
@@ -246,6 +252,9 @@ export async function bulkDeletePostsAction(formData: FormData) {
 	revalidatePath("/");
 	revalidatePath("/blog");
 	revalidatePath("/admin");
+	updateTag("posts");
+	updateTag("post-tags");
+	updateTag("hero-posts");
 	redirect("/admin?tab=posts&postAction=bulkDeleted");
 }
 
@@ -259,6 +268,9 @@ export async function restorePostAction(formData: FormData) {
 	revalidatePath("/");
 	revalidatePath("/blog");
 	revalidatePath("/admin");
+	updateTag("posts");
+	updateTag("post-tags");
+	updateTag("hero-posts");
 	redirect("/admin?tab=posts&postAction=restored");
 }
 
@@ -275,7 +287,47 @@ export async function bulkRestorePostsAction(formData: FormData) {
 	revalidatePath("/");
 	revalidatePath("/blog");
 	revalidatePath("/admin");
+	updateTag("posts");
+	updateTag("post-tags");
+	updateTag("hero-posts");
 	redirect("/admin?tab=posts&postAction=bulkRestored");
+}
+
+export async function permanentlyDeletePostAction(formData: FormData) {
+	await requireAdmin();
+
+	const postId = postIdSchema.safeParse(formData.get("postId"));
+	if (!postId.success) throw new Error("Invalid post.");
+
+	await permanentlyDeletePost(postId.data);
+	revalidatePath("/");
+	revalidatePath("/blog");
+	revalidatePath("/admin");
+	updateTag("posts");
+	updateTag("post-tags");
+	updateTag("hero-posts");
+	updateTag("comment-counts");
+	redirect("/admin?tab=posts&postAction=permanentlyDeleted");
+}
+
+export async function bulkPermanentlyDeletePostsAction(formData: FormData) {
+	await requireAdmin();
+
+	const postIds = z
+		.array(z.string().uuid())
+		.min(1)
+		.safeParse(formData.getAll("postIds"));
+	if (!postIds.success) throw new Error("Select at least one valid post.");
+
+	await permanentlyDeletePosts(postIds.data);
+	revalidatePath("/");
+	revalidatePath("/blog");
+	revalidatePath("/admin");
+	updateTag("posts");
+	updateTag("post-tags");
+	updateTag("hero-posts");
+	updateTag("comment-counts");
+	redirect("/admin?tab=posts&postAction=bulkPermanentlyDeleted");
 }
 
 export async function toggleCommentApproval(formData: FormData) {
@@ -295,6 +347,8 @@ export async function toggleCommentApproval(formData: FormData) {
 	);
 	revalidatePath("/admin");
 	revalidatePath(`/blog/${parsed.data.postSlug}`);
+	updateTag(`post-comments:${parsed.data.postSlug}`);
+	updateTag("comment-counts");
 }
 
 export async function toggleAutoApproval(formData: FormData) {

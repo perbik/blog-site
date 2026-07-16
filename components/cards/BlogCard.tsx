@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-placeholders";
 import { cn } from "@/lib/utils";
 
 interface BlogCardProps {
@@ -12,6 +13,7 @@ interface BlogCardProps {
 	tags?: string[];
 	authorName?: string | null;
 	createdAt?: Date;
+	commentCount?: number;
 	colorClassName?: string;
 	heightClassName?: string;
 	className?: string;
@@ -22,6 +24,8 @@ export function BlogCard({
 	href,
 	image,
 	tags = [],
+	createdAt,
+	commentCount = 0,
 	colorClassName = "bg-[#F5B22D]",
 	heightClassName = "min-h-[380px]",
 	className,
@@ -45,6 +49,8 @@ export function BlogCard({
 						src={image}
 						alt=""
 						fill
+						placeholder="blur"
+						blurDataURL={IMAGE_BLUR_DATA_URL}
 						sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
 						className="object-cover brightness-105 saturate-90 transition-transform duration-500 ease-out group-hover:scale-105"
 					/>
@@ -59,7 +65,22 @@ export function BlogCard({
 				</span>
 			</h2>
 
-			<div className="mt-auto flex shrink-0 items-end justify-between pt-4">
+			{createdAt ? (
+				<div className="mt-auto flex items-center justify-between gap-3 pt-4 font-mono text-xs font-medium text-black/60">
+					<time dateTime={createdAt.toISOString()}>
+						{createdAt.toLocaleDateString("en-US", {
+							month: "short",
+							day: "numeric",
+							year: "numeric",
+						})}
+					</time>
+					<span>
+						{commentCount} {commentCount === 1 ? "comment" : "comments"}
+					</span>
+				</div>
+			) : null}
+
+			<div className="flex shrink-0 items-end justify-between pt-4">
 				{tags.length > 0 ? (
 					<div className="flex shrink-0 flex-wrap items-end gap-1">
 						{visibleTags.map((tag) => (

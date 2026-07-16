@@ -9,12 +9,20 @@ import remarkGfm from "remark-gfm";
 
 import { CommentForm } from "@/components/comments/CommentForm";
 import { CommentList } from "@/components/comments/CommentList";
-import { SiteFooter } from "@/components/layout/SiteFooter";
+import { Footer } from "@/components/layout/Footer";
+import { PostAccentSync } from "@/components/layout/PostAccentSync";
+import { PostActionToast } from "@/components/layout/PostActionToast";
+import { Toaster } from "@/components/ui/sonner";
 import {
-	getCardColorClassForSlug,
-	getCardColorNameForSlug,
+	getCardColorClassForIndex,
+	getCardColorNameForIndex,
 } from "@/lib/blog-card-styles";
-import { getPosts, getPostWithCommentsBySlug } from "@/lib/db/queries";
+import {
+	getPostColorOrder,
+	getPostMetadataBySlug,
+	getPostWithCommentsBySlug,
+} from "@/lib/db/queries";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-placeholders";
 import BlogPostLoading from "./loading";
 
 interface BlogPostPageProps {
@@ -33,7 +41,7 @@ export async function generateMetadata({
 	params,
 }: BlogPostPageProps): Promise<Metadata> {
 	const { slug } = await params;
-	const post = await getPostWithCommentsBySlug(slug);
+	const post = await getPostMetadataBySlug(slug);
 
 	if (!post) {
 		return {
@@ -48,25 +56,27 @@ export async function generateMetadata({
 }
 
 async function BlogPostContent({ slug }: { slug: string }) {
-	const [post, posts] = await Promise.all([
+	const [post, colorOrder] = await Promise.all([
 		getPostWithCommentsBySlug(slug),
-		getPosts(),
+		getPostColorOrder(),
 	]);
 
 	if (!post) {
 		notFound();
 	}
 
-	const accentClassName = getCardColorClassForSlug(posts, post.slug);
-	const accentName = getCardColorNameForSlug(posts, post.slug);
+	const colorIndex = Math.max(colorOrder.indexOf(post.slug), 0);
+	const accentClassName = getCardColorClassForIndex(colorIndex);
+	const accentName = getCardColorNameForIndex(colorIndex);
 	const commentCount = post.comments.length;
 	return (
 		<div
 			data-post-accent={accentName}
 			className="flex min-h-screen flex-col bg-[#f5f5f5] text-black"
 		>
+			<PostAccentSync accent={accentName} />
 			<div
-				className="relative mt-0 h-[clamp(220px,38vw,400px)] w-full overflow-hidden bg-gradient-to-br from-[#C389BA] via-[#699DF4] to-[#F5B22D]"
+				className="relative mt-0 h-[clamp(220px,38vw,400px)] w-full overflow-hidden bg-linear-to-br from-[#C389BA] via-[#699DF4] to-[#F5B22D]"
 				aria-hidden="true"
 			>
 				{post.image ? (
@@ -75,6 +85,8 @@ async function BlogPostContent({ slug }: { slug: string }) {
 						alt=""
 						fill
 						priority
+						placeholder="blur"
+						blurDataURL={IMAGE_BLUR_DATA_URL}
 						sizes="100vw"
 						className="object-cover object-center"
 					/>
@@ -197,17 +209,26 @@ async function BlogPostContent({ slug }: { slug: string }) {
 				</section>
 			</div>
 
-			<SiteFooter />
+			<Footer />
 		</div>
 	);
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
+async function BlogPostRoute({ params }: BlogPostPageProps) {
 	const { slug } = await params;
+	return <BlogPostContent slug={slug} />;
+}
 
+export default function BlogPostPage(props: BlogPostPageProps) {
 	return (
-		<Suspense key={slug} fallback={<BlogPostLoading />}>
-			<BlogPostContent slug={slug} />
-		</Suspense>
+		<>
+			<Suspense fallback={<BlogPostLoading />}>
+				<BlogPostRoute {...props} />
+			</Suspense>
+			<Suspense fallback={null}>
+				<PostActionToast />
+			</Suspense>
+			<Toaster position="top-right" duration={3000} />
+		</>
 	);
 }

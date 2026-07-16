@@ -3,9 +3,9 @@ import { Suspense } from "react";
 
 import { BlogHeroCarousel } from "@/components/blog/BlogHeroCarousel";
 import { HomeEmptyState } from "@/components/home/HomeEmptyState";
-import { SiteFooter } from "@/components/layout/SiteFooter";
+import { Footer } from "@/components/layout/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPosts } from "@/lib/db/queries";
+import { getHeroPosts } from "@/lib/db/queries";
 
 export const metadata: Metadata = {
 	title: "echo",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 async function HomeHero() {
-	const posts = await getPosts();
+	const posts = await getHeroPosts();
 
 	return posts.length > 0 ? (
 		<BlogHeroCarousel posts={posts} />
@@ -42,7 +42,7 @@ export default function Home() {
 			<Suspense fallback={<HomeHeroSkeleton />}>
 				<HomeHero />
 			</Suspense>
-			<SiteFooter dark />
+			<Footer dark />
 		</div>
 	);
 }

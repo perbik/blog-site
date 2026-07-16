@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { seedCommentsTable } from "./comments";
 import { seedPostsTable } from "./posts";
 

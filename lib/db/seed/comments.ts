@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { inArray } from "drizzle-orm";
 import { db } from "../index";
 import { comments, posts } from "../schema";

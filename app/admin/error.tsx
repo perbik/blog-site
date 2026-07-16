@@ -10,7 +10,7 @@ export default function AdminError({ reset }: { reset: () => void }) {
 					Admin unavailable
 				</p>
 				<h1 className="mt-4 font-heading text-5xl font-semibold leading-[0.9]">
-					The dashboard couldn&apos;t load.
+					The dashboard couldn't load.
 				</h1>
 				<p className="mx-auto mt-5 max-w-md text-sm leading-6 text-black/60">
 					Please try the request again.
