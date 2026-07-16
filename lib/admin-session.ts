@@ -19,6 +19,7 @@ export async function getAdminSession() {
 		headers: await headers(),
 	});
 
+	// Better Auth proves the session while ADMIN_EMAIL restricts access to the configured administrator
 	return session?.user.email.toLowerCase() ===
 		process.env.ADMIN_EMAIL?.toLowerCase()
 		? session

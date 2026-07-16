@@ -28,6 +28,7 @@ export interface AdminActionState {
 	values?: Record<string, string>;
 }
 
+// Zod schemas enforce trusted server-side input for every admin operation.
 const loginSchema = z.object({
 	password: z.string().min(1, "Password is required."),
 });
@@ -59,6 +60,7 @@ const autoApprovalSchema = z.object({
 	autoApprove: z.enum(["true", "false"]),
 });
 
+// Sign in with the server-configured admin email while keeping the UI password-only.
 export async function authenticateAdmin(
 	_prevState: AdminActionState,
 	formData: FormData,
@@ -97,6 +99,7 @@ export async function authenticateAdmin(
 	redirect("/admin");
 }
 
+// Validate and create a post, then expire every public post listing it affects.
 export async function createPostAction(
 	_prevState: AdminActionState,
 	formData: FormData,
@@ -143,7 +146,8 @@ export async function createPostAction(
 	} catch {
 		return {
 			success: false,
-			message: "The post could not be created. Check that the slug is unique.",
+			message:
+				"The post could not be created. Check that the title and slug are unique.",
 			values,
 		};
 	}
@@ -156,6 +160,7 @@ export async function createPostAction(
 	redirect(`/blog/${slug}?postAction=created`);
 }
 
+// Update an active post after validating both its UUID and editable fields.
 export async function updatePostAction(
 	_prevState: AdminActionState,
 	formData: FormData,
@@ -207,7 +212,8 @@ export async function updatePostAction(
 	} catch {
 		return {
 			success: false,
-			message: "The post could not be updated. Check that the slug is unique.",
+			message:
+				"The post could not be updated. Check that the title and slug are unique.",
 			values,
 		};
 	}
@@ -223,6 +229,7 @@ export async function updatePostAction(
 	redirect("/admin?tab=posts&postAction=updated");
 }
 
+// Move one active post to Trash without destroying its database record.
 export async function deletePostAction(formData: FormData) {
 	await requireAdmin();
 
@@ -239,6 +246,7 @@ export async function deletePostAction(formData: FormData) {
 	redirect("/admin?tab=posts&postAction=deleted");
 }
 
+// Apply the same reversible deletion to all selected post UUIDs.
 export async function bulkDeletePostsAction(formData: FormData) {
 	await requireAdmin();
 
@@ -258,6 +266,7 @@ export async function bulkDeletePostsAction(formData: FormData) {
 	redirect("/admin?tab=posts&postAction=bulkDeleted");
 }
 
+// Return a trashed post to the active public collection.
 export async function restorePostAction(formData: FormData) {
 	await requireAdmin();
 
@@ -274,6 +283,7 @@ export async function restorePostAction(formData: FormData) {
 	redirect("/admin?tab=posts&postAction=restored");
 }
 
+// Restore all selected posts in one database operation.
 export async function bulkRestorePostsAction(formData: FormData) {
 	await requireAdmin();
 
@@ -293,6 +303,7 @@ export async function bulkRestorePostsAction(formData: FormData) {
 	redirect("/admin?tab=posts&postAction=bulkRestored");
 }
 
+// Permanently delete only a post that is already in Trash.
 export async function permanentlyDeletePostAction(formData: FormData) {
 	await requireAdmin();
 
@@ -310,6 +321,7 @@ export async function permanentlyDeletePostAction(formData: FormData) {
 	redirect("/admin?tab=posts&postAction=permanentlyDeleted");
 }
 
+// Permanently remove selected trashed posts and their cascading comments.
 export async function bulkPermanentlyDeletePostsAction(formData: FormData) {
 	await requireAdmin();
 
@@ -330,6 +342,7 @@ export async function bulkPermanentlyDeletePostsAction(formData: FormData) {
 	redirect("/admin?tab=posts&postAction=bulkPermanentlyDeleted");
 }
 
+// Approve or hide a comment and refresh its public post data and counts.
 export async function toggleCommentApproval(formData: FormData) {
 	await requireAdmin();
 
@@ -351,6 +364,7 @@ export async function toggleCommentApproval(formData: FormData) {
 	updateTag("comment-counts");
 }
 
+// Persist whether future public comments should be approved automatically.
 export async function toggleAutoApproval(formData: FormData) {
 	await requireAdmin();
 
@@ -364,6 +378,7 @@ export async function toggleAutoApproval(formData: FormData) {
 	revalidatePath("/admin");
 }
 
+// End the current Better Auth session and return to the admin login screen.
 export async function logoutAdmin() {
 	await auth.api.signOut({ headers: await headers() });
 	revalidatePath("/admin");

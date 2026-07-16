@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "posts_title_unique" ON "posts" (lower("title"));

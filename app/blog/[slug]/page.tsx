@@ -37,6 +37,7 @@ const postDateFormatter = new Intl.DateTimeFormat("en-US", {
 	year: "numeric",
 });
 
+// Build metadata from the post identified by the URL slug
 export async function generateMetadata({
 	params,
 }: BlogPostPageProps): Promise<Metadata> {
@@ -56,6 +57,7 @@ export async function generateMetadata({
 }
 
 async function BlogPostContent({ slug }: { slug: string }) {
+	// Load individual post and color-order data
 	const [post, colorOrder] = await Promise.all([
 		getPostWithCommentsBySlug(slug),
 		getPostColorOrder(),
@@ -65,6 +67,7 @@ async function BlogPostContent({ slug }: { slug: string }) {
 		notFound();
 	}
 
+	// Keep a post's accent color stable by deriving it from the shared post order
 	const colorIndex = Math.max(colorOrder.indexOf(post.slug), 0);
 	const accentClassName = getCardColorClassForIndex(colorIndex);
 	const accentName = getCardColorNameForIndex(colorIndex);

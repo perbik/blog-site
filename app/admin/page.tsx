@@ -26,12 +26,14 @@ interface AdminPageProps {
 
 type AdminTab = "dashboard" | "compose" | "posts" | "moderation";
 
+// Fetch only the data required by the currently selected admin tab.
 async function AdminContent({ activeTab }: { activeTab: AdminTab }) {
 	if (activeTab === "compose") {
 		return <AdminDashboard activeTab={activeTab} />;
 	}
 
 	if (activeTab === "posts") {
+		// Active and trashed posts are independent, so load them concurrently.
 		const [posts, deletedPosts] = await Promise.all([
 			getPosts(),
 			getDeletedPosts(),
@@ -70,9 +72,11 @@ async function AdminContent({ activeTab }: { activeTab: AdminTab }) {
 }
 
 async function AuthenticatedAdmin({ searchParams }: AdminPageProps) {
+	// Keep all dashboard content behind the server-side session check.
 	if (!(await isAdminAuthenticated())) return <AdminLoginForm />;
 
 	const params = await searchParams;
+	// Normalize unknown or missing tab values to the dashboard.
 	const activeTab: AdminTab =
 		params?.tab === "moderation"
 			? "moderation"
@@ -87,6 +91,7 @@ async function AuthenticatedAdmin({ searchParams }: AdminPageProps) {
 	}
 
 	return (
+		// Reset the loading boundary whenever navigation selects a different tab.
 		<Suspense
 			key={activeTab}
 			fallback={<AdminTabLoading activeTab={activeTab} />}
@@ -99,9 +104,11 @@ async function AuthenticatedAdmin({ searchParams }: AdminPageProps) {
 export default function AdminPage(props: AdminPageProps) {
 	return (
 		<>
+			{/* Stream the login or dashboard after the session check completes. */}
 			<Suspense fallback={<AdminLoading />}>
 				<AuthenticatedAdmin {...props} />
 			</Suspense>
+			{/* Toast parsing should not delay the protected admin content. */}
 			<Suspense fallback={null}>
 				<PostActionToast />
 			</Suspense>

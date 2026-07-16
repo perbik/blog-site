@@ -21,7 +21,7 @@ export function PostCoverImageField({
 }: PostCoverImageFieldProps) {
 	const fileInput = useRef<HTMLInputElement>(null);
 
-	function handleDrop(event: DragEvent<HTMLDivElement>) {
+	function handleDrop(event: DragEvent<HTMLFieldSetElement>) {
 		event.preventDefault();
 		void onUpload(event.dataTransfer.files[0]);
 	}
@@ -42,8 +42,8 @@ export function PostCoverImageField({
 				}
 			/>
 			<input type="hidden" name="image" value={image} />
-			{/* biome-ignore lint/a11y/noStaticElementInteractions: drag-and-drop supplements the accessible file input and browse button. */}
-			<div
+			<fieldset
+				aria-label="Cover image drop zone"
 				onDragOver={(event) => event.preventDefault()}
 				onDrop={handleDrop}
 				className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-black/15 bg-[#ededed] p-5 text-center"
@@ -81,7 +81,7 @@ export function PostCoverImageField({
 						<Upload className="mt-1 size-4" />
 					</button>
 				)}
-			</div>
+			</fieldset>
 			{error ? <p className="mt-2 text-xs text-[#b32f1b]">{error}</p> : null}
 		</div>
 	);

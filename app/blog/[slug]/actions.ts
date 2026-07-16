@@ -9,6 +9,7 @@ import {
 	getPostBySlug,
 } from "@/lib/db/queries";
 
+// Validate and normalize public comment input on the server
 const commentSchema = z.object({
 	authorName: z
 		.string()
@@ -36,6 +37,7 @@ export interface AddCommentState {
 	};
 }
 
+// Validate the submission, save it with the current approval setting, and refresh affected views
 export async function addComment(
 	slug: string,
 	_prevState: AddCommentState,
@@ -68,6 +70,7 @@ export async function addComment(
 
 	const autoApproved = await getAutoApproveComments();
 
+	// New comments are immediately visible only when auto-approval is enabled.
 	await createComment({
 		postId: post.id,
 		authorName: parsed.data.authorName,

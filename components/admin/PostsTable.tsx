@@ -243,6 +243,7 @@ export function PostsTable({
 		[view],
 	);
 
+	// TanStack composes filtering, sorting, selection, and pagination into derived row models
 	const table = useReactTable({
 		data: visiblePosts,
 		columns,
