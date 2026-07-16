@@ -244,10 +244,6 @@ export async function getPostColorOrder() {
 }
 
 export async function getHeroPosts() {
-	"use cache";
-	cacheLife("max");
-	cacheTag("posts", "hero-posts");
-
 	return db
 		.select(postSummarySelection)
 		.from(posts)

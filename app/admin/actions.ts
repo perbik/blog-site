@@ -156,7 +156,6 @@ export async function createPostAction(
 	revalidatePath("/blog");
 	updateTag("posts");
 	updateTag("post-tags");
-	updateTag("hero-posts");
 	redirect(`/blog/${slug}?postAction=created`);
 }
 
@@ -224,7 +223,6 @@ export async function updatePostAction(
 	revalidatePath(`/blog/${slug}`);
 	updateTag("posts");
 	updateTag("post-tags");
-	updateTag("hero-posts");
 	updateTag(`post:${slug}`);
 	redirect("/admin?tab=posts&postAction=updated");
 }
@@ -242,7 +240,6 @@ export async function deletePostAction(formData: FormData) {
 	revalidatePath("/admin");
 	updateTag("posts");
 	updateTag("post-tags");
-	updateTag("hero-posts");
 	redirect("/admin?tab=posts&postAction=deleted");
 }
 
@@ -262,7 +259,6 @@ export async function bulkDeletePostsAction(formData: FormData) {
 	revalidatePath("/admin");
 	updateTag("posts");
 	updateTag("post-tags");
-	updateTag("hero-posts");
 	redirect("/admin?tab=posts&postAction=bulkDeleted");
 }
 
@@ -279,7 +275,6 @@ export async function restorePostAction(formData: FormData) {
 	revalidatePath("/admin");
 	updateTag("posts");
 	updateTag("post-tags");
-	updateTag("hero-posts");
 	redirect("/admin?tab=posts&postAction=restored");
 }
 
@@ -299,7 +294,6 @@ export async function bulkRestorePostsAction(formData: FormData) {
 	revalidatePath("/admin");
 	updateTag("posts");
 	updateTag("post-tags");
-	updateTag("hero-posts");
 	redirect("/admin?tab=posts&postAction=bulkRestored");
 }
 
@@ -316,7 +310,6 @@ export async function permanentlyDeletePostAction(formData: FormData) {
 	revalidatePath("/admin");
 	updateTag("posts");
 	updateTag("post-tags");
-	updateTag("hero-posts");
 	updateTag("comment-counts");
 	redirect("/admin?tab=posts&postAction=permanentlyDeleted");
 }
@@ -337,7 +330,6 @@ export async function bulkPermanentlyDeletePostsAction(formData: FormData) {
 	revalidatePath("/admin");
 	updateTag("posts");
 	updateTag("post-tags");
-	updateTag("hero-posts");
 	updateTag("comment-counts");
 	redirect("/admin?tab=posts&postAction=bulkPermanentlyDeleted");
 }
