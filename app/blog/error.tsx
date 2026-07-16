@@ -18,7 +18,7 @@ export default function BlogError({ reset }: BlogErrorProps) {
 					The stories took a detour.
 				</h1>
 				<p className="mx-auto mt-5 max-w-md leading-7 text-white/80">
-					We couldn&apos;t load the blog right now. Give it another try.
+					We couldn't load the blog right now. Give it another try.
 				</p>
 				<Button
 					type="button"

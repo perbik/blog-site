@@ -14,10 +14,11 @@ import { PostAccentSync } from "@/components/layout/PostAccentSync";
 import { PostActionToast } from "@/components/layout/PostActionToast";
 import { Toaster } from "@/components/ui/sonner";
 import {
-	getCardColorClassForSlug,
-	getCardColorNameForSlug,
+	getCardColorClassForIndex,
+	getCardColorNameForIndex,
 } from "@/lib/blog-card-styles";
 import {
+	getPostColorOrder,
 	getPostMetadataBySlug,
 	getPostWithCommentsBySlug,
 } from "@/lib/db/queries";
@@ -55,14 +56,18 @@ export async function generateMetadata({
 }
 
 async function BlogPostContent({ slug }: { slug: string }) {
-	const post = await getPostWithCommentsBySlug(slug);
+	const [post, colorOrder] = await Promise.all([
+		getPostWithCommentsBySlug(slug),
+		getPostColorOrder(),
+	]);
 
 	if (!post) {
 		notFound();
 	}
 
-	const accentClassName = getCardColorClassForSlug(post.slug);
-	const accentName = getCardColorNameForSlug(post.slug);
+	const colorIndex = Math.max(colorOrder.indexOf(post.slug), 0);
+	const accentClassName = getCardColorClassForIndex(colorIndex);
+	const accentName = getCardColorNameForIndex(colorIndex);
 	const commentCount = post.comments.length;
 	return (
 		<div
@@ -71,7 +76,7 @@ async function BlogPostContent({ slug }: { slug: string }) {
 		>
 			<PostAccentSync accent={accentName} />
 			<div
-				className="relative mt-0 h-[clamp(220px,38vw,400px)] w-full overflow-hidden bg-gradient-to-br from-[#C389BA] via-[#699DF4] to-[#F5B22D]"
+				className="relative mt-0 h-[clamp(220px,38vw,400px)] w-full overflow-hidden bg-linear-to-br from-[#C389BA] via-[#699DF4] to-[#F5B22D]"
 				aria-hidden="true"
 			>
 				{post.image ? (
