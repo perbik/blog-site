@@ -3,6 +3,7 @@ import { DM_Sans, Outfit } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Navbar } from "@/components/layout/Navbar";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
 import "./globals.css";
@@ -75,6 +76,7 @@ export default function RootLayout({
 				</Suspense>
 
 				<main className="relative z-10 min-w-0">{children}</main>
+				<Toaster position="top-right" duration={3000} />
 			</body>
 		</html>
 	);
