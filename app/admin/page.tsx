@@ -5,7 +5,6 @@ import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
 import { AdminTabLoading } from "@/components/admin/AdminTabLoading";
 import { PostActionToast } from "@/components/layout/PostActionToast";
-import { Toaster } from "@/components/ui/sonner";
 import { isAdminAuthenticated } from "@/lib/admin-session";
 import {
 	getAutoApproveComments,
@@ -112,7 +111,6 @@ export default function AdminPage(props: AdminPageProps) {
 			<Suspense fallback={null}>
 				<PostActionToast />
 			</Suspense>
-			<Toaster position="top-right" duration={3000} />
 		</>
 	);
 }

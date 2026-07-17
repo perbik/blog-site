@@ -12,7 +12,6 @@ import { CommentList } from "@/components/comments/CommentList";
 import { Footer } from "@/components/layout/Footer";
 import { PostAccentSync } from "@/components/layout/PostAccentSync";
 import { PostActionToast } from "@/components/layout/PostActionToast";
-import { Toaster } from "@/components/ui/sonner";
 import {
 	getCardColorClassForIndex,
 	getCardColorNameForIndex,
@@ -231,7 +230,6 @@ export default function BlogPostPage(props: BlogPostPageProps) {
 			<Suspense fallback={null}>
 				<PostActionToast />
 			</Suspense>
-			<Toaster position="top-right" duration={3000} />
 		</>
 	);
 }
